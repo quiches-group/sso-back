@@ -48,13 +48,22 @@ const isAdmin = async (req: Request, res: Response, next: NextFunction): Promise
     next();
 };
 
-const isApplicationOwner = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+const applicationExists = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const application = await ApplicationRepository.findOneById(req.params.applicationId);
 
     if (!application) {
         res.status(404).json({ errors: { code: 'CANNOT_FIND_APPLICATION' }, data: {} });
         return;
     }
+
+    // @ts-ignore
+    req.application = application;
+    next();
+};
+
+const isApplicationOwner = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    // @ts-ignore
+    const { application } = req;
 
     // @ts-ignore
     if (!application!.ownerRefs.includes(req.user._id)) {
@@ -83,4 +92,5 @@ export default {
     isAdmin,
     userInParamsIsCurrentUser,
     isApplicationOwner,
+    applicationExists,
 };

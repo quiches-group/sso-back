@@ -4,6 +4,7 @@ import ApplicationRepository from '../repositories/ApplicationRepository';
 import { Application } from '../models/Application';
 import ApiError from '../errors/ApiError';
 import { User } from '../models/User';
+import UserRepository from '../repositories/UserRepository';
 
 export const createApplication = async (name: string): Promise<Application> => {
     const application = await ApplicationRepository.findOneBy({ name });
@@ -35,3 +36,6 @@ export const listApplicationKeys = async (applicationId: string): Promise<{ priv
     ApplicationRepository.findOneById(applicationId, ['privateKey', 'publicKey'])
         .then((application: Application | null) => application!)
         .then(({ privateKey, publicKey }: Application) => ({ privateKey, publicKey }));
+
+export const listApplicationOwners = async (application: Application): Promise<User[]> =>
+    UserRepository.findManyBy({ _id: { $in: application.ownerRefs } });

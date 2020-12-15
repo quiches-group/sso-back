@@ -1,11 +1,10 @@
 import { Request, Response } from 'express';
 import {
     createApplication,
-    generateApplicationKeys, listApplicationKeys,
+    generateApplicationKeys, listApplicationKeys, listApplicationOwners,
     listOwnedApplicationsByUser,
     listUserApplications,
 } from '../services/applicationService';
-import { User } from '../models/User';
 
 export const putApplicationRoute = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -55,6 +54,17 @@ export const getUserApplications = async (req: Request, res: Response): Promise<
         const applications = await listUserApplications(req.user);
 
         res.status(200).json({ data: applications, error: {} });
+    } catch (e) {
+        res.status(e.statusCode).json({ data: {}, error: { code: e.code } });
+    }
+};
+
+export const getApplicationOwners = async (req: Request, res: Response): Promise<void> => {
+    try {
+        // @ts-ignore
+        const users = await listApplicationOwners(req.application);
+
+        res.status(200).json({ data: users, error: {} });
     } catch (e) {
         res.status(e.statusCode).json({ data: {}, error: { code: e.code } });
     }
