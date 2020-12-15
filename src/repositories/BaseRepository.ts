@@ -32,7 +32,8 @@ class BaseRepository<T extends Document> {
         try {
             // @ts-ignore
             const finedObject = await this.Model.findOne(condition)
-                .select(hiddenPropertiesToSelect.join('+'));
+                .select(hiddenPropertiesToSelect.map((property) => `+${property}`).join(' '));
+
             return finedObject || null;
         } catch (e) {
             return null;

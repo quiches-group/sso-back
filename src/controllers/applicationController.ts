@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import {
     createApplication,
-    generateApplicationKeys,
+    generateApplicationKeys, listApplicationKeys,
     listOwnedApplicationsByUser,
     listUserApplications,
 } from '../services/applicationService';
@@ -31,10 +31,19 @@ export const getOwnedApplications = async (req: Request, res: Response): Promise
 
 export const postGenerateApplicationKey = async (req: Request, res: Response): Promise<void> => {
     try {
-        // @ts-ignore
-        await generateApplicationKeys(req.user as User, req.params.applicationId);
+        await generateApplicationKeys(req.params.applicationId);
 
         res.status(201).send();
+    } catch (e) {
+        res.status(e.statusCode).json({ data: {}, error: { code: e.code } });
+    }
+};
+
+export const getApplicationKeys = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const keys = await listApplicationKeys(req.params.applicationId);
+
+        res.status(200).json({ data: keys, error: {} });
     } catch (e) {
         res.status(e.statusCode).json({ data: {}, error: { code: e.code } });
     }

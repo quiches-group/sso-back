@@ -1,5 +1,6 @@
 import { Application, Router } from 'express';
 import {
+    getApplicationKeys,
     getOwnedApplications, getUserApplications,
     postGenerateApplicationKey,
     putApplicationRoute,
@@ -19,7 +20,8 @@ publicRouter.put('/applications', putApplicationRoute);
 publicRouter.get('/applications', [middlewares.isAuthenticated], getUserApplications);
 
 //  Application [ADMINISTRATION]
-adminRouter.post('/applications/:applicationId/generate-keys', postGenerateApplicationKey);
+adminRouter.post('/applications/:applicationId/generate-keys', [middlewares.userIsOwnerOfApplication], postGenerateApplicationKey);
+adminRouter.get('/applications/:applicationId/keys', [middlewares.userIsOwnerOfApplication], getApplicationKeys);
 adminRouter.get('/applications', getOwnedApplications);
 
 //  Security [PUBLIC]

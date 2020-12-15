@@ -2,6 +2,8 @@ import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import UserRepository from '../repositories/UserRepository';
 import { SECRET_KEY } from './authenticationService';
+import ApiError from '../errors/ApiError';
+import ApplicationRepository from '../repositories/ApplicationRepository';
 
 type Token = { _id: string }
 
@@ -46,6 +48,23 @@ const isAdmin = async (req: Request, res: Response, next: NextFunction): Promise
     next();
 };
 
+const userIsOwnerOfApplication = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const application = await ApplicationRepository.findOneById(req.params.applicationId);
+
+    if (!application) {
+        res.status(404).json({ errors: { code: 'CANNOT_FIND_APPLICATION' }, data: {} });
+        return;
+    }
+
+    // @ts-ignore
+    if (!application!.ownerRefs.includes(req.user._id)) {
+        res.status(401).json({ errors: { code: 'USER_NOT_OWNER' }, data: {} });
+        return;
+    }
+
+    next();
+};
+
 const userInParamsIsCurrentUser = (req: Request, res: Response, next: NextFunction): void => {
     const { userId } = req.params;
     // @ts-ignore
@@ -63,4 +82,5 @@ export default {
     isAuthenticated,
     isAdmin,
     userInParamsIsCurrentUser,
+    userIsOwnerOfApplication,
 };
