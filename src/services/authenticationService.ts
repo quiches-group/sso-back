@@ -6,6 +6,8 @@ import fs from 'fs';
 import UserRepository from '../repositories/UserRepository';
 import ApiError from '../errors/ApiError';
 import RefreshTokenRepository from '../repositories/RefreshTokenRepository';
+import { Application } from '../models/Application';
+import { User } from '../models/User';
 
 const { JWT_TOKEN_EXPIRATION_TIME, JWT_REFRESH_TOKEN_EXPIRATION_TIME } = process.env;
 export const SECRET_KEY = fs.readFileSync(`${__dirname}/../../key.JWT`, { encoding: 'utf-8' });
@@ -49,4 +51,20 @@ export const authenticate = async (body: Record<string, string>): Promise<TokenP
     }
 
     return generateTokenPair(String(user._id));
+};
+
+export const authorizeUserApplication = async (user: User, application: Application): Promise<void> => {
+    if (user.applicationsRefs.includes(application._id)) {
+        throw new ApiError('APPLICATION_ALREADY_AUTHORIZE', 400);
+    }
+
+    await UserRepository.pushArray({ _id: user._id }, { applicationsRefs: application._id });
+};
+
+export const revokeAuthorizeApplication = async (user: User, application: Application): Promise<void> => {
+    if (!user.applicationsRefs.includes(application._id)) {
+        throw new ApiError('APPLICATION_NOT_AUTHORIZE', 400);
+    }
+
+    await UserRepository.pullArray({ _id: user._id }, { applicationsRefs: application._id });
 };

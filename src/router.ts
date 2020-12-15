@@ -1,38 +1,43 @@
 import { Application, Router } from 'express';
 import {
+    getAllApplication,
     getApplicationKeys, getApplicationOwners, getApplicationUsers,
-    getOwnedApplications, getUserApplications,
+    getOwnedApplications, getAuthorizedApplications,
     postGenerateApplicationKey,
     putApplicationRoute,
 } from './controllers/applicationController';
 import { getMe, putUserRoute } from './controllers/userController';
-import { postLoginRoute, postRefreshTokenRoute } from './controllers/authenticationController';
+import {
+    postAuthorizeUserApplication,
+    postLoginRoute,
+    postRefreshTokenRoute, postRevokeAuthorizedApplication,
+} from './controllers/authenticationController';
 import middlewares from './services/middlewares';
 
 const publicRouter: Router = Router();
-const adminRouter: Router = Router();
 
 //  Users [PUBLIC]
 publicRouter.put('/users', putUserRoute);
 publicRouter.get('/users/me', [middlewares.isAuthenticated], getMe);
 
 //  Application [ADMINISTRATION]
-adminRouter.put('/applications', [middlewares.isAuthenticated], putApplicationRoute);
-adminRouter.get('/applications', [middlewares.isAuthenticated], getUserApplications);
-adminRouter.get('/applications', getOwnedApplications);
-adminRouter.get('/application/:applicationId/owners', [middlewares.applicationExists, middlewares.isApplicationOwner], getApplicationOwners);
-adminRouter.get('/application/:applicationId/users', [middlewares.applicationExists, middlewares.isApplicationOwner], getApplicationUsers);
-adminRouter.get('/applications/:applicationId/keys', [middlewares.applicationExists, middlewares.isApplicationOwner], getApplicationKeys);
-adminRouter.post('/applications/:applicationId/generate-keys', [middlewares.applicationExists, middlewares.isApplicationOwner], postGenerateApplicationKey);
+publicRouter.put('/applications', [middlewares.isAuthenticated], putApplicationRoute);
+publicRouter.get('/applications', [middlewares.isAuthenticated, middlewares.isAdmin], getAllApplication);
+publicRouter.get('/applications/authorized', [middlewares.isAuthenticated], getAuthorizedApplications);
+publicRouter.get('/applications/owned', [middlewares.isAuthenticated], getOwnedApplications);
+publicRouter.get('/application/:applicationId/owners', [middlewares.applicationExists, middlewares.isApplicationOwner], getApplicationOwners);
+publicRouter.get('/application/:applicationId/users', [middlewares.applicationExists, middlewares.isApplicationOwner], getApplicationUsers);
+publicRouter.get('/applications/:applicationId/keys', [middlewares.applicationExists, middlewares.isApplicationOwner], getApplicationKeys);
+publicRouter.post('/applications/:applicationId/keys', [middlewares.applicationExists, middlewares.isApplicationOwner], postGenerateApplicationKey);
 
 //  Security [PUBLIC]
 publicRouter.post('/login', postLoginRoute);
 publicRouter.post('/refresh', postRefreshTokenRoute);
+publicRouter.post('/authorize/:applicationId', [middlewares.isAuthenticated, middlewares.applicationExists], postAuthorizeUserApplication);
+publicRouter.post('/revoke/:applicationId', [middlewares.isAuthenticated, middlewares.applicationExists], postRevokeAuthorizedApplication);
 
 const routerPub = (): Router => publicRouter;
-const routerAdmin = (): Router => adminRouter;
 
 export const useRouters = (app: Application): void => {
     app.use('/api', routerPub());
-    app.use('/api/administration', [middlewares.isAuthenticated], routerAdmin());
 };

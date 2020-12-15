@@ -26,19 +26,22 @@ export const generateApplicationKeys = async (applicationId: string): Promise<vo
     await ApplicationRepository.updateOneBy({ _id: applicationId }, keys);
 };
 
-export const listOwnedApplicationsByUser = async (user: User): Promise<Application[]> =>
+export const listAllApplications = (): Promise<Application[]> =>
+    ApplicationRepository.findManyBy({});
+
+export const listOwnedApplicationsByUser = (user: User): Promise<Application[]> =>
     ApplicationRepository.getApplicationsOwnedBy(user._id);
 
-export const listUserApplications = async (user: User): Promise<Application[]> =>
+export const listAuthorizedApplications = (user: User): Promise<Application[]> =>
     ApplicationRepository.getUserApplications(user);
 
-export const listApplicationKeys = async (applicationId: string): Promise<{ privateKey?: string, publicKey?: string }> =>
+export const listApplicationKeys = (applicationId: string): Promise<{ privateKey?: string, publicKey?: string }> =>
     ApplicationRepository.findOneById(applicationId, ['privateKey', 'publicKey'])
         .then((application: Application | null) => application!)
         .then(({ privateKey, publicKey }: Application) => ({ privateKey, publicKey }));
 
-export const listApplicationOwners = async (application: Application): Promise<User[]> =>
+export const listApplicationOwners = (application: Application): Promise<User[]> =>
     UserRepository.findManyBy({ _id: { $in: application.ownerRefs } });
 
-export const listApplicationUsers = async (application: Application): Promise<User[]> =>
+export const listApplicationUsers = (application: Application): Promise<User[]> =>
     UserRepository.findManyBy({ applicationsRefs: application._id });

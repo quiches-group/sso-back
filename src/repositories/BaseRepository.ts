@@ -78,6 +78,26 @@ class BaseRepository<T extends Document> {
             return [];
         }
     }
+
+    async pushArray(condition: FilterQuery<T>, data: DataType): Promise<boolean> {
+        try {
+            // @ts-ignore
+            const update = await this.Model.updateOne(condition, { $push: data, $inc: { __v: 1 } });
+            return update.nModified > 0;
+        } catch {
+            return false;
+        }
+    }
+
+    async pullArray(condition: FilterQuery<T>, data: DataType): Promise<boolean> {
+        try {
+            // @ts-ignore
+            const update = await this.Model.updateOne(condition, { $pull: data, $inc: { __v: 1 } });
+            return update.nModified > 0;
+        } catch {
+            return false;
+        }
+    }
 }
 
 export type FilterQuery<T> = MongooseFilterQuery<T>;

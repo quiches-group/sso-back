@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import {
     createApplication,
-    generateApplicationKeys, listApplicationKeys, listApplicationOwners, listApplicationUsers,
+    generateApplicationKeys, listAllApplications, listApplicationKeys, listApplicationOwners, listApplicationUsers,
     listOwnedApplicationsByUser,
-    listUserApplications,
+    listAuthorizedApplications,
 } from '../services/applicationService';
 
 export const putApplicationRoute = async (req: Request, res: Response): Promise<void> => {
@@ -38,6 +38,16 @@ export const postGenerateApplicationKey = async (req: Request, res: Response): P
     }
 };
 
+export const getAllApplication = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const applications = await listAllApplications();
+
+        res.status(200).json({ data: applications, error: {} });
+    } catch (e) {
+        res.status(e.statusCode).json({ data: {}, error: { code: e.code } });
+    }
+};
+
 export const getApplicationKeys = async (req: Request, res: Response): Promise<void> => {
     try {
         const keys = await listApplicationKeys(req.params.applicationId);
@@ -48,10 +58,10 @@ export const getApplicationKeys = async (req: Request, res: Response): Promise<v
     }
 };
 
-export const getUserApplications = async (req: Request, res: Response): Promise<void> => {
+export const getAuthorizedApplications = async (req: Request, res: Response): Promise<void> => {
     try {
         // @ts-ignore
-        const applications = await listUserApplications(req.user);
+        const applications = await listAuthorizedApplications(req.user);
 
         res.status(200).json({ data: applications, error: {} });
     } catch (e) {
