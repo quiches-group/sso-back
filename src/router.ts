@@ -1,8 +1,8 @@
 import { Application, Router } from 'express';
 import {
-    getOwnedApplications,
+    getOwnedApplications, getUserApplications,
     postGenerateApplicationKey,
-    putApplicationRoute
+    putApplicationRoute,
 } from './controllers/applicationController';
 import { putUserRoute } from './controllers/userController';
 import { postLoginRoute, postRefreshTokenRoute } from './controllers/authenticationController';
@@ -11,15 +11,18 @@ import middlewares from './services/middlewares';
 const publicRouter: Router = Router();
 const adminRouter: Router = Router();
 
+//  Users [PUBLIC]
 publicRouter.put('/users', putUserRoute);
 
-//  Application
+//  Application [PUBLIC]
 publicRouter.put('/applications', putApplicationRoute);
-// publicRouter.get('/applications', putApplicationRoute);
-adminRouter.post('/applications/:applicationId/generate-keys/', postGenerateApplicationKey);
-adminRouter.get('/applications/', getOwnedApplications);
+publicRouter.get('/applications', [middlewares.isAuthenticated], getUserApplications);
 
-//  Security
+//  Application [ADMINISTRATION]
+adminRouter.post('/applications/:applicationId/generate-keys', postGenerateApplicationKey);
+adminRouter.get('/applications', getOwnedApplications);
+
+//  Security [PUBLIC]
 publicRouter.post('/login', postLoginRoute);
 publicRouter.post('/refresh', postRefreshTokenRoute);
 

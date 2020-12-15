@@ -37,3 +37,6 @@ export const generateApplicationKeys = async (user: User, applicationId: string)
 
 export const listOwnedApplicationsByUser = async (user: User): Promise<Application[]> =>
     ApplicationRepository.getApplicationsOwnedBy(user._id);
+
+export const listUserApplications = async (user: User): Promise<Application[]> =>
+    ApplicationRepository.getUserApplications(user);
