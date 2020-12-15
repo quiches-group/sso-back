@@ -1,5 +1,9 @@
-import { putApplicationRoute } from './controllers/applicationController';
 import { Application, Router } from 'express';
+import {
+    getOwnedApplications,
+    postGenerateApplicationKey,
+    putApplicationRoute
+} from './controllers/applicationController';
 import { putUserRoute } from './controllers/userController';
 import { postLoginRoute, postRefreshTokenRoute } from './controllers/authenticationController';
 import middlewares from './services/middlewares';
@@ -9,7 +13,10 @@ const adminRouter: Router = Router();
 
 publicRouter.put('/users', putUserRoute);
 
+//  Application
 publicRouter.put('/applications', putApplicationRoute);
+// publicRouter.get('/applications', putApplicationRoute);
+adminRouter.get('/applications/', getOwnedApplications);
 
 //  Security
 publicRouter.post('/login', postLoginRoute);

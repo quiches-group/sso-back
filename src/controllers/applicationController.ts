@@ -11,3 +11,14 @@ export const putApplicationRoute = async (req: Request, res: Response): Promise<
         res.status(e.statusCode).json({ data: {}, error: { code: e.code } });
     }
 };
+
+export const getOwnedApplications = async (req: Request, res: Response): Promise<void> => {
+    try {
+        // @ts-ignore
+        const applications = await listOwnedApplicationsByUser(req.user);
+
+        res.status(200).json({ data: applications, error: {} });
+    } catch (e) {
+        res.status(e.statusCode).json({ data: {}, error: { code: e.code } });
+    }
+};

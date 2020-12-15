@@ -11,7 +11,7 @@ const UserSchema = new Schema({
     isActive: { type: 'boolean', default: false },
     isAdmin: { type: 'boolean', default: false },
     activationKey: { type: 'string' },
-    applicationsRefs: [{ type: Schema.Types.ObjectId, ref: 'Application' }],
+    applicationsRefs: [{ type: Schema.Types.ObjectId, ref: 'Application', default: [] }],
     __v: { type: Number, select: false },
 });
 
@@ -22,10 +22,10 @@ export interface User extends Document {
   firstname?: string;
   lastname?: string;
   registrationDate?: number;
-  active: boolean;
+  isActive: boolean;
   isAdmin: boolean;
   activationKey?: string;
-  applications: Types.ObjectId[];
+  applicationsRefs: Types.ObjectId[];
 }
 
 export const UserModel: Model<User> = model<User>('User', UserSchema);

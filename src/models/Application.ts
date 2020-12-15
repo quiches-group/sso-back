@@ -15,6 +15,7 @@ export interface Application extends Document {
   name: string;
   slug?: string;
   ownersIds: Types.ObjectId[];
+  ownerRefs: Types.ObjectId[];
   callbackUrls: string[];
 }
 

@@ -9,8 +9,8 @@ class ApplicationRepository extends BaseRepository<Application> {
         super(ApplicationModel);
     }
 
-    getApplicationsOwnedBy = (userId: string): Promise<Application[]> =>
-        super.findManyBy({ owners: userId })
+    getApplicationsOwnedBy = (userId: Types.ObjectId): Promise<Application[]> =>
+        super.findManyBy({ ownerRefs: userId })
 
     getUserApplications = async (user: Types.ObjectId | User): Promise<Application[]> => {
         if (user instanceof Types.ObjectId) {
@@ -23,9 +23,9 @@ class ApplicationRepository extends BaseRepository<Application> {
             return this.getUserApplications(userObject as User);
         }
 
-        const { applications } = user as User;
+        const { applicationsRefs } = user as User;
 
-        return this.findManyBy({ _id: { $in: applications } });
+        return this.findManyBy({ _id: { $in: applicationsRefs } });
     }
 }
 
