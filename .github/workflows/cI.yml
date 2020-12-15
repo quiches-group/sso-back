@@ -15,7 +15,7 @@ jobs:
       - name: rsync deployments
         uses: burnett01/rsync-deployments@4.1
         with:
-          switches: -avzr --delete --exclude=".env" --exclude="key.JWT" --include="" --filter=""
+          switches: -avzr --delete --exclude=".env" --exclude="key.JWT" --exclude=".git/" --exclude=".github/" --include="" --filter=""
           path: ./
           remote_path: /root/quiche-sso-back-end/
           remote_host: ${{ secrets.HOST }}
