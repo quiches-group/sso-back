@@ -1,6 +1,6 @@
 import { Application, Router } from 'express';
 import {
-    getApplicationKeys, getApplicationOwners,
+    getApplicationKeys, getApplicationOwners, getApplicationUsers,
     getOwnedApplications, getUserApplications,
     postGenerateApplicationKey,
     putApplicationRoute,
@@ -21,6 +21,7 @@ adminRouter.put('/applications', [middlewares.isAuthenticated], putApplicationRo
 adminRouter.get('/applications', [middlewares.isAuthenticated], getUserApplications);
 adminRouter.get('/applications', getOwnedApplications);
 adminRouter.get('/application/:applicationId/owners', [middlewares.applicationExists, middlewares.isApplicationOwner], getApplicationOwners);
+adminRouter.get('/application/:applicationId/users', [middlewares.applicationExists, middlewares.isApplicationOwner], getApplicationUsers);
 adminRouter.get('/applications/:applicationId/keys', [middlewares.applicationExists, middlewares.isApplicationOwner], getApplicationKeys);
 adminRouter.post('/applications/:applicationId/generate-keys', [middlewares.applicationExists, middlewares.isApplicationOwner], postGenerateApplicationKey);
 

@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import {
     createApplication,
-    generateApplicationKeys, listApplicationKeys, listApplicationOwners,
+    generateApplicationKeys, listApplicationKeys, listApplicationOwners, listApplicationUsers,
     listOwnedApplicationsByUser,
     listUserApplications,
 } from '../services/applicationService';
@@ -63,6 +63,17 @@ export const getApplicationOwners = async (req: Request, res: Response): Promise
     try {
         // @ts-ignore
         const users = await listApplicationOwners(req.application);
+
+        res.status(200).json({ data: users, error: {} });
+    } catch (e) {
+        res.status(e.statusCode).json({ data: {}, error: { code: e.code } });
+    }
+};
+
+export const getApplicationUsers = async (req: Request, res: Response): Promise<void> => {
+    try {
+        // @ts-ignore
+        const users = await listApplicationUsers(req.application);
 
         res.status(200).json({ data: users, error: {} });
     } catch (e) {

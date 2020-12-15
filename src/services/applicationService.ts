@@ -39,3 +39,6 @@ export const listApplicationKeys = async (applicationId: string): Promise<{ priv
 
 export const listApplicationOwners = async (application: Application): Promise<User[]> =>
     UserRepository.findManyBy({ _id: { $in: application.ownerRefs } });
+
+export const listApplicationUsers = async (application: Application): Promise<User[]> =>
+    UserRepository.findManyBy({ applicationsRefs: application._id });

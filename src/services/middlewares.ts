@@ -2,7 +2,6 @@ import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import UserRepository from '../repositories/UserRepository';
 import { SECRET_KEY } from './authenticationService';
-import ApiError from '../errors/ApiError';
 import ApplicationRepository from '../repositories/ApplicationRepository';
 
 type Token = { _id: string }
