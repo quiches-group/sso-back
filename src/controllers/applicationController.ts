@@ -3,7 +3,7 @@ import {
     createApplication,
     generateApplicationKeys, listAllApplications, listApplicationKeys, listApplicationOwners, listApplicationUsers,
     listOwnedApplicationsByUser,
-    listAuthorizedApplications,
+    listAuthorizedApplications, promoteApplicationOwner, downgradeApplicationOwner,
 } from '../services/applicationService';
 
 export const putApplicationRoute = async (req: Request, res: Response): Promise<void> => {
@@ -86,6 +86,28 @@ export const getApplicationUsers = async (req: Request, res: Response): Promise<
         const users = await listApplicationUsers(req.application);
 
         res.status(200).json({ data: users, error: {} });
+    } catch (e) {
+        res.status(e.statusCode).json({ data: {}, error: { code: e.code } });
+    }
+};
+
+export const postPromoteApplicationOwner = async (req: Request, res: Response): Promise<void> => {
+    try {
+        // @ts-ignore
+        await promoteApplicationOwner(req.application, req.params.userId);
+
+        res.status(201).send();
+    } catch (e) {
+        res.status(e.statusCode).json({ data: {}, error: { code: e.code } });
+    }
+};
+
+export const postDowngradeApplicationOwner = async (req: Request, res: Response): Promise<void> => {
+    try {
+        // @ts-ignore
+        await downgradeApplicationOwner(req.application, req.params.userId);
+
+        res.status(201).send();
     } catch (e) {
         res.status(e.statusCode).json({ data: {}, error: { code: e.code } });
     }

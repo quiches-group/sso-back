@@ -4,7 +4,7 @@ import {
     getApplicationKeys, getApplicationOwners, getApplicationUsers,
     getOwnedApplications, getAuthorizedApplications,
     postGenerateApplicationKey,
-    putApplicationRoute,
+    putApplicationRoute, postPromoteApplicationOwner, postDowngradeApplicationOwner,
 } from './controllers/applicationController';
 import { getMe, putUserRoute } from './controllers/userController';
 import {
@@ -25,10 +25,12 @@ publicRouter.put('/applications', [middlewares.isAuthenticated], putApplicationR
 publicRouter.get('/applications', [middlewares.isAuthenticated, middlewares.isAdmin], getAllApplication);
 publicRouter.get('/applications/authorized', [middlewares.isAuthenticated], getAuthorizedApplications);
 publicRouter.get('/applications/owned', [middlewares.isAuthenticated], getOwnedApplications);
-publicRouter.get('/application/:applicationId/owners', [middlewares.applicationExists, middlewares.isApplicationOwner], getApplicationOwners);
-publicRouter.get('/application/:applicationId/users', [middlewares.applicationExists, middlewares.isApplicationOwner], getApplicationUsers);
-publicRouter.get('/applications/:applicationId/keys', [middlewares.applicationExists, middlewares.isApplicationOwner], getApplicationKeys);
-publicRouter.post('/applications/:applicationId/keys', [middlewares.applicationExists, middlewares.isApplicationOwner], postGenerateApplicationKey);
+publicRouter.get('/application/:applicationId/owners', [middlewares.isAuthenticated, middlewares.applicationExists, middlewares.isApplicationOwner], getApplicationOwners);
+publicRouter.post('/application/:applicationId/promote/:userId', [middlewares.isAuthenticated, middlewares.applicationExists, middlewares.isApplicationOwner], postPromoteApplicationOwner);
+publicRouter.post('/application/:applicationId/downgrade/:userId', [middlewares.isAuthenticated, middlewares.applicationExists, middlewares.isApplicationOwner], postDowngradeApplicationOwner);
+publicRouter.get('/application/:applicationId/users', [middlewares.isAuthenticated, middlewares.applicationExists, middlewares.isApplicationOwner], getApplicationUsers);
+publicRouter.get('/applications/:applicationId/keys', [middlewares.isAuthenticated, middlewares.applicationExists, middlewares.isApplicationOwner], getApplicationKeys);
+publicRouter.post('/applications/:applicationId/keys', [middlewares.isAuthenticated, middlewares.applicationExists, middlewares.isApplicationOwner], postGenerateApplicationKey);
 
 //  Security [PUBLIC]
 publicRouter.post('/login', postLoginRoute);

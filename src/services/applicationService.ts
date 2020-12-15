@@ -45,3 +45,23 @@ export const listApplicationOwners = (application: Application): Promise<User[]>
 
 export const listApplicationUsers = (application: Application): Promise<User[]> =>
     UserRepository.findManyBy({ applicationsRefs: application._id });
+
+export const promoteApplicationOwner = async (application: Application, userId: string): Promise<void> => {
+    const user = await UserRepository.findOneById(userId);
+
+    if (!user) {
+        throw new ApiError('CANNOT_FIND_USER', 404);
+    }
+
+    await ApplicationRepository.pushArray({ _id: application._id }, { ownerRefs: userId });
+};
+
+export const downgradeApplicationOwner = async (application: Application, userId: string): Promise<void> => {
+    const user = await UserRepository.findOneById(userId);
+
+    if (!user) {
+        throw new ApiError('CANNOT_FIND_USER', 404);
+    }
+
+    await ApplicationRepository.pullArray({ _id: application._id }, { ownerRefs: userId });
+};
