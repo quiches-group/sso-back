@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
-import { createApplication } from '../services/applicationService';
+import {createApplication, generateApplicationKeys, listOwnedApplicationsByUser} from '../services/applicationService';
+import { User } from '../models/User';
 
 export const putApplicationRoute = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -18,6 +19,20 @@ export const getOwnedApplications = async (req: Request, res: Response): Promise
         const applications = await listOwnedApplicationsByUser(req.user);
 
         res.status(200).json({ data: applications, error: {} });
+    } catch (e) {
+        res.status(e.statusCode).json({ data: {}, error: { code: e.code } });
+    }
+};
+
+export const postGenerateApplicationKey = async (req: Request, res: Response): Promise<void> => {
+    try {
+        // @ts-ignore
+        const { user } = req;
+        const { applicationId } = req.params;
+
+        await generateApplicationKeys(user as User, applicationId);
+
+        res.status(201).send();
     } catch (e) {
         res.status(e.statusCode).json({ data: {}, error: { code: e.code } });
     }

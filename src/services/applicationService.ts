@@ -1,4 +1,5 @@
 import slugify from 'slugify';
+import Crypto from 'crypto';
 import ApplicationRepository from '../repositories/ApplicationRepository';
 import { Application } from '../models/Application';
 import ApiError from '../errors/ApiError';
@@ -14,5 +15,25 @@ export const createApplication = async (name: string): Promise<Application> => {
     const slug = slugify(name).toLowerCase();
     return ApplicationRepository.saveData({ name, slug });
 };
+
+export const generateApplicationKeys = async (user: User, applicationId: string): Promise<void> => {
+    const application = await ApplicationRepository.findOneById(applicationId);
+
+    if (!application) {
+        throw new ApiError('CANNOT_FIND_APPLICATION', 404);
+    }
+
+    if (!application.ownerRefs.includes(user._id)) {
+        throw new ApiError('USER_NOT_OWNER', 401);
+    }
+
+    const keys = {
+        publicKey: `pub_${Crypto.randomBytes(50).toString('hex')}`,
+        privateKey: `priv_${Crypto.randomBytes(50).toString('hex')}`,
+    };
+
+    await ApplicationRepository.updateOneBy({ _id: application }, keys);
+};
+
 export const listOwnedApplicationsByUser = async (user: User): Promise<Application[]> =>
     ApplicationRepository.getApplicationsOwnedBy(user._id);

@@ -7,6 +7,8 @@ const ApplicationSchema = new Schema({
     slug: { type: 'string', unique: true },
     ownerRefs: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     callbackUrls: { type: 'array', default: [] },
+    publicKey: { type: 'string', select: false },
+    privateKey: { type: 'string', select: false },
     __v: { type: Number, select: false },
 });
 
@@ -14,7 +16,8 @@ export interface Application extends Document {
   _id: Types.ObjectId;
   name: string;
   slug?: string;
-  ownersIds: Types.ObjectId[];
+  publicKey?: string,
+  privateKey?: string,
   ownerRefs: Types.ObjectId[];
   callbackUrls: string[];
 }

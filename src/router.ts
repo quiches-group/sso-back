@@ -16,6 +16,7 @@ publicRouter.put('/users', putUserRoute);
 //  Application
 publicRouter.put('/applications', putApplicationRoute);
 // publicRouter.get('/applications', putApplicationRoute);
+adminRouter.post('/applications/:applicationId/generate-keys/', postGenerateApplicationKey);
 adminRouter.get('/applications/', getOwnedApplications);
 
 //  Security
