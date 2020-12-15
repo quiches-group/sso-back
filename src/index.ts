@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires,global-require,no-console,import/no-extraneous-dependencies */
 import mongoose from 'mongoose';
 import express, { Application, json } from 'express';
+import cookieParser from 'cookie-parser';
 // import expressFileUpload from 'express-fileupload';
 
 const app: Application = express();
@@ -15,6 +16,7 @@ const startApp = () => {
 
     // app.use(expressFileUpload({ limits: { fileSize: 10000000 } }));
     app.use(json());
+    app.use(cookieParser());
     app.use('/api', router());
 
     app.listen(PORT, () => console.log(`SERVER_PORT: ${PORT}`));

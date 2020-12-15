@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { createUser } from '../services/userService';
 
-export const putUser = async (req: Request, res: Response): Promise<void> => {
+export const putUserRoute = async (req: Request, res: Response): Promise<void> => {
     try {
         await createUser(req.body);
 

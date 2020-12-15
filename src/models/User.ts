@@ -18,7 +18,7 @@ const UserSchema = new Schema({
 export interface User extends Document {
   _id: Types.ObjectId;
   mail: string;
-  password?: string;
+  password: string;
   firstname?: string;
   lastname?: string;
   registrationDate?: number;

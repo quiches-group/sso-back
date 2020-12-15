@@ -39,6 +39,11 @@ class BaseRepository<T extends Document> {
         }
     }
 
+    async findOneById(_id: string, hiddenPropertiesToSelect: HiddenPropertyType = []): Promise<T | null> {
+        // @ts-ignore
+        return this.findOneBy({ _id }, hiddenPropertiesToSelect);
+    }
+
     async deleteOnyBy(condition: FilterQuery<T>): Promise<boolean> {
         try {
             // @ts-ignore
@@ -58,6 +63,7 @@ class BaseRepository<T extends Document> {
             const update = await this.Model.updateOne(condition, { $set: data, $inc: { __v: 1 } });
             return update.nModified > 0;
         } catch (e) {
+            console.log(e);
             return false;
         }
     }

@@ -1,6 +1,6 @@
 .idea/
 .DS_Store
 .env
-
+key.JWT
 node_modules/
 build/
