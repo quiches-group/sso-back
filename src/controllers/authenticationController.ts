@@ -3,8 +3,7 @@ import { authenticate } from '../services/authenticationService';
 
 export const postLoginRoute = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { mail, password } = req.body;
-        const result = await authenticate(mail, password);
+        const result = await authenticate(req.body);
 
         res.json({ data: result, error: {} });
     } catch (e) {

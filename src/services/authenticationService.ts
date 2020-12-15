@@ -37,7 +37,11 @@ const generateTokenPair = async (_id: string): Promise<TokenPair> => ({
     refreshToken: await createRefreshToken(_id),
 });
 
-export const authenticate = async (mail: string, password: string): Promise<TokenPair> => {
+export const authenticate = async (body: Record<string, string>): Promise<TokenPair> => {
+    const {
+        mail, password, redirect_url, public_key,
+    } = body;
+
     const user = await UserRepository.findOneBy({ mail }, ['password']);
 
     if (!user || !(await comparePassword({ password, storedPassword: user.password }))) {

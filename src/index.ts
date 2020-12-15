@@ -12,12 +12,12 @@ if (process.env.NODE_ENV !== 'production') {
 const { DB_URL, PORT } = process.env;
 
 const startApp = () => {
-    const { router } = require('./router');
+    const { useRouters } = require('./router');
 
     // app.use(expressFileUpload({ limits: { fileSize: 10000000 } }));
     app.use(json());
     app.use(cookieParser());
-    app.use('/api', router());
+    useRouters(app);
 
     app.listen(PORT, () => console.log(`SERVER_PORT: ${PORT}`));
 };
