@@ -48,7 +48,7 @@ const isAdmin = async (req: Request, res: Response, next: NextFunction): Promise
     next();
 };
 
-const userIsOwnerOfApplication = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+const isApplicationOwner = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const application = await ApplicationRepository.findOneById(req.params.applicationId);
 
     if (!application) {
@@ -82,5 +82,5 @@ export default {
     isAuthenticated,
     isAdmin,
     userInParamsIsCurrentUser,
-    userIsOwnerOfApplication,
+    isApplicationOwner,
 };

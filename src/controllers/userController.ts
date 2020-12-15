@@ -10,3 +10,8 @@ export const putUserRoute = async (req: Request, res: Response): Promise<void> =
         res.status(e.statusCode).json({ data: {}, error: { code: e.code } });
     }
 };
+
+export const getMe = async (req: Request, res: Response): Promise<void> => {
+    // @ts-ignore
+    res.status(200).json({ data: req.user, error: {} });
+};

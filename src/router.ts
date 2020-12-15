@@ -5,7 +5,7 @@ import {
     postGenerateApplicationKey,
     putApplicationRoute,
 } from './controllers/applicationController';
-import { putUserRoute } from './controllers/userController';
+import { getMe, putUserRoute } from './controllers/userController';
 import { postLoginRoute, postRefreshTokenRoute } from './controllers/authenticationController';
 import middlewares from './services/middlewares';
 
@@ -14,14 +14,15 @@ const adminRouter: Router = Router();
 
 //  Users [PUBLIC]
 publicRouter.put('/users', putUserRoute);
+publicRouter.get('/users/me', [middlewares.isAuthenticated], getMe);
 
 //  Application [PUBLIC]
 publicRouter.put('/applications', putApplicationRoute);
 publicRouter.get('/applications', [middlewares.isAuthenticated], getUserApplications);
 
 //  Application [ADMINISTRATION]
-adminRouter.post('/applications/:applicationId/generate-keys', [middlewares.userIsOwnerOfApplication], postGenerateApplicationKey);
-adminRouter.get('/applications/:applicationId/keys', [middlewares.userIsOwnerOfApplication], getApplicationKeys);
+adminRouter.post('/applications/:applicationId/generate-keys', [middlewares.isApplicationOwner], postGenerateApplicationKey);
+adminRouter.get('/applications/:applicationId/keys', [middlewares.isApplicationOwner], getApplicationKeys);
 adminRouter.get('/applications', getOwnedApplications);
 
 //  Security [PUBLIC]
