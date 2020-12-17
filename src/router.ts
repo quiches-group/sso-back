@@ -1,10 +1,17 @@
 import { Application, Router } from 'express';
 import {
     getAllApplication,
-    getApplicationKeys, getApplicationOwners, getApplicationUsers,
-    getOwnedApplications, getAuthorizedApplications,
+    getApplicationKeys,
+    getApplicationOwners,
+    getApplicationUsers,
+    getOwnedApplications,
+    getAuthorizedApplications,
     postGenerateApplicationKey,
-    putApplicationRoute, postPromoteApplicationOwner, postDowngradeApplicationOwner, postAddCallbackUrl,
+    putApplicationRoute,
+    postPromoteApplicationOwner,
+    postDowngradeApplicationOwner,
+    postAddCallbackUrl,
+    getApplicationBySlug,
 } from './controllers/applicationController';
 import { getMe, putUserRoute } from './controllers/userController';
 import {
@@ -23,6 +30,7 @@ publicRouter.get('/users/me', [middlewares.isAuthenticated], getMe);
 //  Application [ADMINISTRATION]
 publicRouter.put('/applications', [middlewares.isAuthenticated], putApplicationRoute);
 publicRouter.get('/applications', [middlewares.isAuthenticated, middlewares.isAdmin], getAllApplication);
+publicRouter.get('/applications/:applicationSlug', [middlewares.isAuthenticated, middlewares.applicationExistsBySlug, middlewares.isApplicationOwner], getApplicationBySlug);
 publicRouter.get('/applications/authorized', [middlewares.isAuthenticated], getAuthorizedApplications);
 publicRouter.get('/applications/owned', [middlewares.isAuthenticated], getOwnedApplications);
 publicRouter.get('/application/:applicationId/owners', [middlewares.isAuthenticated, middlewares.applicationExists, middlewares.isApplicationOwner], getApplicationOwners);

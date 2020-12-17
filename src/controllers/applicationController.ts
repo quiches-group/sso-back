@@ -39,6 +39,11 @@ export const postGenerateApplicationKey = async (req: Request, res: Response): P
     }
 };
 
+export const getApplicationBySlug = async (req: Request, res: Response): Promise<void> => {
+    // @ts-ignore
+    res.status(200).json({ data: req.application, error: {} });
+};
+
 export const getAllApplication = async (req: Request, res: Response): Promise<void> => {
     try {
         const applications = await listAllApplications();

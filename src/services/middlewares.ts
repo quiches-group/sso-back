@@ -60,6 +60,19 @@ const applicationExists = async (req: Request, res: Response, next: NextFunction
     next();
 };
 
+const applicationExistsBySlug = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const application = await ApplicationRepository.findOneBy({ slug: req.params.applicationSlug });
+
+    if (!application) {
+        res.status(404).json({ errors: { code: 'CANNOT_FIND_APPLICATION' }, data: {} });
+        return;
+    }
+
+    // @ts-ignore
+    req.application = application;
+    next();
+};
+
 const isApplicationOwner = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     // @ts-ignore
     const { application } = req;
@@ -92,4 +105,5 @@ export default {
     userInParamsIsCurrentUser,
     isApplicationOwner,
     applicationExists,
+    applicationExistsBySlug,
 };
