@@ -62,7 +62,11 @@ export const authenticate = async (body: Record<string, string>): Promise<Record
     const keys = await generateTokenPair(String(user._id));
 
     if (isThirdPartyApplication && !user.applicationsRefs.includes(application!._id)) {
-        return { ...keys, nextAction: 'AUTHORIZE_APPLICATION' };
+        return {
+            ...keys,
+            redirectUrl: `${redirectUrl}?token=${keys.token}&refresh_token=${keys.refreshToken}`,
+            nextAction: 'AUTHORIZE_APPLICATION',
+        };
     } if (isThirdPartyApplication) {
         return {
             ...keys,
