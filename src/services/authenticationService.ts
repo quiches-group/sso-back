@@ -34,13 +34,13 @@ export const createRefreshToken = async (_id: string): Promise<string> => {
     return result.token;
 };
 
-type TokenPair = { token: string, refreshToken: string, redirectUrl?: string };
+type TokenPair = { token: string, refreshToken: string };
 const generateTokenPair = async (_id: string): Promise<TokenPair> => ({
     token: await createToken(_id),
     refreshToken: await createRefreshToken(_id),
 });
 
-export const authenticate = async (body: Record<string, string>): Promise<TokenPair> => {
+export const authenticate = async (body: Record<string, string>): Promise<Record<string, string>> => {
     const {
         mail, password, redirectUrl, publicKey,
     } = body;
@@ -61,9 +61,17 @@ export const authenticate = async (body: Record<string, string>): Promise<TokenP
 
     const keys = await generateTokenPair(String(user._id));
 
-    return isThirdPartyApplication
-        ? { ...keys, redirectUrl: `${redirectUrl}?token=${keys.token}&refresh_token=${keys.refreshToken}` }
-        : keys;
+    if (isThirdPartyApplication && !user.applicationsRefs.includes(application!._id)) {
+        return { ...keys, action: 'AUTHORIZE_APPLICATION' };
+    } if (isThirdPartyApplication) {
+        return {
+            ...keys,
+            redirectUrl: `${redirectUrl}?token=${keys.token}&refresh_token=${keys.refreshToken}`,
+            action: 'REDIRECT',
+        };
+    }
+
+    return keys;
 };
 
 export const authorizeUserApplication = async (user: User, application: Application): Promise<void> => {
