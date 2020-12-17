@@ -9,7 +9,8 @@ import {
 export const putApplicationRoute = async (req: Request, res: Response): Promise<void> => {
     try {
         const { name } = req.body;
-        await createApplication(name);
+        // @ts-ignore
+        await createApplication(name, req.user);
 
         res.status(201).send();
     } catch (e) {

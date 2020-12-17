@@ -6,17 +6,6 @@ import ApiError from '../errors/ApiError';
 import { User } from '../models/User';
 import UserRepository from '../repositories/UserRepository';
 
-export const createApplication = async (name: string): Promise<Application> => {
-    const application = await ApplicationRepository.findOneBy({ name });
-
-    if (application != null) {
-        throw new ApiError('APPLICATION_ALREADY_EXISTS');
-    }
-
-    const slug = slugify(name).toLowerCase();
-    return ApplicationRepository.saveData({ name, slug });
-};
-
 export const generateApplicationKeys = async (applicationId: string): Promise<void> => {
     const keys = {
         publicKey: `pub_${Crypto.randomBytes(50).toString('hex')}`,
@@ -64,4 +53,18 @@ export const downgradeApplicationOwner = async (application: Application, userId
     }
 
     await ApplicationRepository.pullArray({ _id: application._id }, { ownerRefs: userId });
+};
+
+export const createApplication = async (name: string, user: User): Promise<Application> => {
+    const createdApplication = await ApplicationRepository.findOneBy({ name });
+
+    if (createdApplication !== null) {
+        throw new ApiError('APPLICATION_ALREADY_EXISTS');
+    }
+
+    const slug = slugify(name).toLowerCase();
+    const application = await ApplicationRepository.saveData({ name, slug });
+    await promoteApplicationOwner(application, String(user._id));
+
+    return application;
 };
