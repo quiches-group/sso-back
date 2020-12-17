@@ -1,7 +1,7 @@
 import slugify from 'slugify';
 import Crypto from 'crypto';
 import ApplicationRepository from '../repositories/ApplicationRepository';
-import { Application } from '../models/Application';
+import { Application, PublicApplication } from '../models/Application';
 import ApiError from '../errors/ApiError';
 import { User } from '../models/User';
 import UserRepository from '../repositories/UserRepository';
@@ -13,6 +13,16 @@ export const generateApplicationKeys = async (applicationId: string): Promise<vo
     };
 
     await ApplicationRepository.updateOneBy({ _id: applicationId }, keys);
+};
+
+export const selectApplicationByPublicKey = async (publicKey: string): Promise<PublicApplication> => {
+    const application = await ApplicationRepository.findApplicationByPublicKey(publicKey);
+
+    if (!application) {
+        throw new ApiError('CANNOT_FIND_APPLICATION', 404);
+    }
+
+    return application;
 };
 
 export const listAllApplications = (): Promise<Application[]> =>

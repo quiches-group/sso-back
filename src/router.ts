@@ -11,7 +11,7 @@ import {
     postPromoteApplicationOwner,
     postDowngradeApplicationOwner,
     postAddCallbackUrl,
-    getApplicationBySlug,
+    getApplicationBySlug, getApplicationByPublicKey,
 } from './controllers/applicationController';
 import { getMe, putUserRoute } from './controllers/userController';
 import {
@@ -31,6 +31,7 @@ publicRouter.get('/users/me', [middlewares.isAuthenticated], getMe);
 publicRouter.put('/applications', [middlewares.isAuthenticated], putApplicationRoute);
 publicRouter.get('/applications', [middlewares.isAuthenticated, middlewares.isAdmin], getAllApplication);
 publicRouter.get('/applications/single/:applicationSlug', [middlewares.isAuthenticated, middlewares.applicationExistsBySlug, middlewares.isApplicationOwner], getApplicationBySlug);
+publicRouter.get('/applications/single/:publicKey/key', [middlewares.isAuthenticated], getApplicationByPublicKey);
 publicRouter.get('/applications/authorized', [middlewares.isAuthenticated], getAuthorizedApplications);
 publicRouter.get('/applications/owned', [middlewares.isAuthenticated], getOwnedApplications);
 publicRouter.get('/application/:applicationId/owners', [middlewares.isAuthenticated, middlewares.applicationExists, middlewares.isApplicationOwner], getApplicationOwners);

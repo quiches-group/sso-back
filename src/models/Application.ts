@@ -22,4 +22,8 @@ export interface Application extends Document {
   callbackUrls: string[];
 }
 
+export interface PublicApplication {
+    name: string
+}
+
 export const ApplicationModel: Model<Application> = model<Application>('Application', ApplicationSchema);

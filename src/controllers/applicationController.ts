@@ -1,9 +1,17 @@
 import { Request, Response } from 'express';
 import {
     createApplication,
-    generateApplicationKeys, listAllApplications, listApplicationKeys, listApplicationOwners, listApplicationUsers,
+    generateApplicationKeys,
+    listAllApplications,
+    listApplicationKeys,
+    listApplicationOwners,
+    listApplicationUsers,
     listOwnedApplicationsByUser,
-    listAuthorizedApplications, promoteApplicationOwner, downgradeApplicationOwner, addCallbackUrl,
+    listAuthorizedApplications,
+    promoteApplicationOwner,
+    downgradeApplicationOwner,
+    addCallbackUrl,
+    selectApplicationByPublicKey,
 } from '../services/applicationService';
 
 export const putApplicationRoute = async (req: Request, res: Response): Promise<void> => {
@@ -42,6 +50,16 @@ export const postGenerateApplicationKey = async (req: Request, res: Response): P
 export const getApplicationBySlug = async (req: Request, res: Response): Promise<void> => {
     // @ts-ignore
     res.status(200).json({ data: req.application, error: {} });
+};
+
+export const getApplicationByPublicKey = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const application = await selectApplicationByPublicKey(req.body.publicKey);
+
+        res.status(200).json({ data: application, error: {} });
+    } catch (e) {
+        res.status(e.statusCode).json({ data: {}, error: { code: e.code } });
+    }
 };
 
 export const getAllApplication = async (req: Request, res: Response): Promise<void> => {

@@ -1,6 +1,6 @@
 import { Types } from 'mongoose';
 import BaseRepository from './BaseRepository';
-import { Application, ApplicationModel } from '../models/Application';
+import { Application, ApplicationModel, PublicApplication } from '../models/Application';
 import UserRepository from './UserRepository';
 import { User } from '../models/User';
 
@@ -26,6 +26,16 @@ class ApplicationRepository extends BaseRepository<Application> {
         const { applicationsRefs } = user as User;
 
         return this.findManyBy({ _id: { $in: applicationsRefs } });
+    }
+
+    findApplicationByPublicKey = async (publicKey: string): Promise<PublicApplication | null> => {
+        const application = await super.findOneBy({ publicKey });
+
+        if (!application) {
+            return null;
+        }
+
+        return { name: application.name };
     }
 }
 
