@@ -54,7 +54,7 @@ export const getApplicationBySlug = async (req: Request, res: Response): Promise
 
 export const getApplicationByPublicKey = async (req: Request, res: Response): Promise<void> => {
     try {
-        const application = await selectApplicationByPublicKey(req.body.publicKey);
+        const application = await selectApplicationByPublicKey(req.params.publicKey);
 
         res.status(200).json({ data: application, error: {} });
     } catch (e) {
