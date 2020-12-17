@@ -3,7 +3,7 @@ import {
     createApplication,
     generateApplicationKeys, listAllApplications, listApplicationKeys, listApplicationOwners, listApplicationUsers,
     listOwnedApplicationsByUser,
-    listAuthorizedApplications, promoteApplicationOwner, downgradeApplicationOwner,
+    listAuthorizedApplications, promoteApplicationOwner, downgradeApplicationOwner, addCallbackUrl,
 } from '../services/applicationService';
 
 export const putApplicationRoute = async (req: Request, res: Response): Promise<void> => {
@@ -107,6 +107,17 @@ export const postDowngradeApplicationOwner = async (req: Request, res: Response)
     try {
         // @ts-ignore
         await downgradeApplicationOwner(req.application, req.params.userId);
+
+        res.status(201).send();
+    } catch (e) {
+        res.status(e.statusCode).json({ data: {}, error: { code: e.code } });
+    }
+};
+
+export const postAddCallbackUrl = async (req: Request, res: Response): Promise<void> => {
+    try {
+        // @ts-ignore
+        await addCallbackUrl(req.application, req.body.callbackUrl);
 
         res.status(201).send();
     } catch (e) {

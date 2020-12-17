@@ -4,7 +4,7 @@ import {
     getApplicationKeys, getApplicationOwners, getApplicationUsers,
     getOwnedApplications, getAuthorizedApplications,
     postGenerateApplicationKey,
-    putApplicationRoute, postPromoteApplicationOwner, postDowngradeApplicationOwner,
+    putApplicationRoute, postPromoteApplicationOwner, postDowngradeApplicationOwner, postAddCallbackUrl,
 } from './controllers/applicationController';
 import { getMe, putUserRoute } from './controllers/userController';
 import {
@@ -31,6 +31,7 @@ publicRouter.post('/application/:applicationId/downgrade/:userId', [middlewares.
 publicRouter.get('/application/:applicationId/users', [middlewares.isAuthenticated, middlewares.applicationExists, middlewares.isApplicationOwner], getApplicationUsers);
 publicRouter.get('/applications/:applicationId/keys', [middlewares.isAuthenticated, middlewares.applicationExists, middlewares.isApplicationOwner], getApplicationKeys);
 publicRouter.post('/applications/:applicationId/keys', [middlewares.isAuthenticated, middlewares.applicationExists, middlewares.isApplicationOwner], postGenerateApplicationKey);
+publicRouter.post('/applications/:applicationId/callback-urls', [middlewares.isAuthenticated, middlewares.applicationExists, middlewares.isApplicationOwner], postAddCallbackUrl);
 
 //  Security [PUBLIC]
 publicRouter.post('/login', postLoginRoute);

@@ -68,3 +68,7 @@ export const createApplication = async (name: string, user: User): Promise<Appli
 
     return application;
 };
+
+export const addCallbackUrl = async (application: Application, url: string): Promise<void> => {
+    await ApplicationRepository.pushArray({ _id: application._id }, { callbackUrls: url });
+};
