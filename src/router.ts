@@ -44,7 +44,7 @@ publicRouter.post('/applications/:applicationId/callback-urls', [middlewares.isA
 //  Security [PUBLIC]
 publicRouter.post('/login', postLoginRoute);
 publicRouter.post('/refresh', postRefreshTokenRoute);
-publicRouter.post('/authorize/:applicationId', [middlewares.isAuthenticated, middlewares.applicationExists], postAuthorizeUserApplication);
+publicRouter.post('/authorize', [middlewares.isAuthenticated], postAuthorizeUserApplication);
 publicRouter.post('/revoke/:applicationId', [middlewares.isAuthenticated, middlewares.applicationExists], postRevokeAuthorizedApplication);
 
 const routerPub = (): Router => publicRouter;

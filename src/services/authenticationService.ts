@@ -74,7 +74,15 @@ export const authenticate = async (body: Record<string, string>): Promise<Record
     return keys;
 };
 
-export const authorizeUserApplication = async (user: User, application: Application): Promise<void> => {
+export const authorizeUserApplication = async (user: User, body: Record<string, string>): Promise<void> => {
+    const { publicKey, redirectUrl } = body;
+
+    const application = await ApplicationRepository.findOneBy({ publicKey });
+
+    if (!application || !application.callbackUrls.includes(redirectUrl)) {
+        throw new ApiError('APPLICATION_ERROR', 400);
+    }
+
     if (user.applicationsRefs.includes(application._id)) {
         throw new ApiError('APPLICATION_ALREADY_AUTHORIZE', 400);
     }

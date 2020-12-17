@@ -18,7 +18,7 @@ export const postRefreshTokenRoute = async (req: Request, res: Response): Promis
 export const postAuthorizeUserApplication = async (req: Request, res: Response): Promise<void> => {
     try {
         // @ts-ignore
-        await authorizeUserApplication(req.user, req.application);
+        await authorizeUserApplication(req.user, req.body, req.application);
 
         res.status(201).send();
     } catch (e) {
