@@ -11,9 +11,9 @@ import {
     postPromoteApplicationOwner,
     postDowngradeApplicationOwner,
     postAddCallbackUrl,
-    getApplicationBySlug, getApplicationByPublicKey,
+    getApplicationBySlug, getApplicationByPublicKey, deleteCallbackUrl, deleteApplicationRoute,
 } from './controllers/applicationController';
-import { getMe, putUserRoute } from './controllers/userController';
+import { getMe, postUserActivation, putUserRoute } from './controllers/userController';
 import {
     postAuthorizeUserApplication,
     postLoginRoute,
@@ -26,9 +26,11 @@ const publicRouter: Router = Router();
 //  Users [PUBLIC]
 publicRouter.put('/users', putUserRoute);
 publicRouter.get('/users/me', [middlewares.isAuthenticated], getMe);
+publicRouter.post('/users/activation', postUserActivation);
 
 //  Application [ADMINISTRATION]
 publicRouter.put('/applications', [middlewares.isAuthenticated], putApplicationRoute);
+publicRouter.delete('/applications/single/:applicationId', [middlewares.isAuthenticated, middlewares.applicationExists, middlewares.isApplicationOwner], deleteApplicationRoute);
 publicRouter.get('/applications', [middlewares.isAuthenticated, middlewares.isAdmin], getAllApplication);
 publicRouter.get('/applications/single/:applicationSlug', [middlewares.isAuthenticated, middlewares.applicationExistsBySlug, middlewares.isApplicationOwner], getApplicationBySlug);
 publicRouter.get('/applications/single/:publicKey/key', [middlewares.isAuthenticated], getApplicationByPublicKey);
@@ -41,6 +43,7 @@ publicRouter.get('/application/:applicationId/users', [middlewares.isAuthenticat
 publicRouter.get('/applications/:applicationId/keys', [middlewares.isAuthenticated, middlewares.applicationExists, middlewares.isApplicationOwner], getApplicationKeys);
 publicRouter.post('/applications/:applicationId/keys', [middlewares.isAuthenticated, middlewares.applicationExists, middlewares.isApplicationOwner], postGenerateApplicationKey);
 publicRouter.post('/applications/:applicationId/callback-urls', [middlewares.isAuthenticated, middlewares.applicationExists, middlewares.isApplicationOwner], postAddCallbackUrl);
+publicRouter.delete('/applications/:applicationId/callback-urls', [middlewares.isAuthenticated, middlewares.applicationExists, middlewares.isApplicationOwner], deleteCallbackUrl);
 
 //  Security [PUBLIC]
 publicRouter.post('/login', postLoginRoute);

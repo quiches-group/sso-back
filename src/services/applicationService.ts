@@ -75,10 +75,27 @@ export const createApplication = async (name: string, user: User): Promise<Appli
     const slug = slugify(name).toLowerCase();
     const application = await ApplicationRepository.saveData({ name, slug });
     await promoteApplicationOwner(application, String(user._id));
+    await generateApplicationKeys(String(application._id));
 
     return application;
 };
 
+export const removeApplication = async (application: Application) : Promise<void> => {
+    const users = await listApplicationUsers(application);
+    const userIds = users.map((user) => user._id);
+    await ApplicationRepository.pullArray({ _id: { $in: userIds } }, { applicationRefs: application._id });
+
+    const result = await ApplicationRepository.deleteOnyBy({ _id: application._id });
+
+    if (!result) {
+        throw new ApiError('UNKNOWN_ERROR');
+    }
+};
+
 export const addCallbackUrl = async (application: Application, url: string): Promise<void> => {
     await ApplicationRepository.pushArray({ _id: application._id }, { callbackUrls: url });
+};
+
+export const removeCallbackUrl = async (application: Application, url: string): Promise<void> => {
+    await ApplicationRepository.pullArray({ _id: application._id }, { callbackUrls: url });
 };

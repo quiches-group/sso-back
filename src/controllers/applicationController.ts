@@ -11,7 +11,7 @@ import {
     promoteApplicationOwner,
     downgradeApplicationOwner,
     addCallbackUrl,
-    selectApplicationByPublicKey,
+    selectApplicationByPublicKey, removeCallbackUrl, removeApplication,
 } from '../services/applicationService';
 
 export const putApplicationRoute = async (req: Request, res: Response): Promise<void> => {
@@ -21,6 +21,17 @@ export const putApplicationRoute = async (req: Request, res: Response): Promise<
         const application = await createApplication(name, req.user);
 
         res.status(200).json({ data: application, error: {} });
+    } catch (e) {
+        res.status(e.statusCode).json({ data: {}, error: { code: e.code } });
+    }
+};
+
+export const deleteApplicationRoute = async (req: Request, res: Response): Promise<void> => {
+    try {
+        // @ts-ignore
+        await removeApplication(req.application);
+
+        res.status(201).send();
     } catch (e) {
         res.status(e.statusCode).json({ data: {}, error: { code: e.code } });
     }
@@ -141,6 +152,17 @@ export const postAddCallbackUrl = async (req: Request, res: Response): Promise<v
     try {
         // @ts-ignore
         await addCallbackUrl(req.application, req.body.callbackUrl);
+
+        res.status(201).send();
+    } catch (e) {
+        res.status(e.statusCode).json({ data: {}, error: { code: e.code } });
+    }
+};
+
+export const deleteCallbackUrl = async (req: Request, res: Response): Promise<void> => {
+    try {
+        // @ts-ignore
+        await removeCallbackUrl(req.application, req.body.callbackUrl);
 
         res.status(201).send();
     } catch (e) {

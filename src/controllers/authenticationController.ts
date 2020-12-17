@@ -3,8 +3,21 @@ import { authenticate, authorizeUserApplication, revokeAuthorizeApplication } fr
 
 export const postLoginRoute = async (req: Request, res: Response): Promise<void> => {
     try {
-        const result = await authenticate(req.body);
+        const { refreshToken, ...result } = await authenticate(req.body);
 
+        if (result.redirectUrl) {
+            const url = new URL(result.redirectUrl);
+            res.cookie('SSO_Q_REFRESH_TOKEN', refreshToken, {
+                httpOnly: true,
+                domain: url.hostname,
+                expires: new Date(Date.now() + 900000),
+            });
+        } else {
+            res.cookie('SSO_Q_REFRESH_TOKEN', refreshToken, {
+                httpOnly: true,
+                expires: new Date(Date.now() + 900000),
+            });
+        }
         res.json({ data: result, error: {} });
     } catch (e) {
         res.status(e.statusCode).json({ data: {}, error: { code: e.code } });

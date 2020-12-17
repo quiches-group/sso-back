@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-var-requires,global-require,no-console,import/no-extraneous-dependencies */
 import mongoose from 'mongoose';
 import express, { Application, json } from 'express';
-import cookieParser from 'cookie-parser';
 // import expressFileUpload from 'express-fileupload';
+import cookieParser from 'cookie-parser';
 
 const app: Application = express();
 if (process.env.NODE_ENV !== 'production') {
