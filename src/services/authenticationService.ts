@@ -8,6 +8,7 @@ import ApiError from '../errors/ApiError';
 import RefreshTokenRepository from '../repositories/RefreshTokenRepository';
 import { Application } from '../models/Application';
 import { User } from '../models/User';
+import ApplicationRepository from '../repositories/ApplicationRepository';
 
 const { JWT_TOKEN_EXPIRATION_TIME, JWT_REFRESH_TOKEN_EXPIRATION_TIME } = process.env;
 export const SECRET_KEY = fs.readFileSync(`${__dirname}/../../key.JWT`, { encoding: 'utf-8' });
@@ -33,7 +34,7 @@ export const createRefreshToken = async (_id: string): Promise<string> => {
     return result.token;
 };
 
-type TokenPair = { token: string, refreshToken: string };
+type TokenPair = { token: string, refreshToken: string, redirectUrl?: string };
 const generateTokenPair = async (_id: string): Promise<TokenPair> => ({
     token: await createToken(_id),
     refreshToken: await createRefreshToken(_id),
@@ -41,8 +42,16 @@ const generateTokenPair = async (_id: string): Promise<TokenPair> => ({
 
 export const authenticate = async (body: Record<string, string>): Promise<TokenPair> => {
     const {
-        mail, password, redirect_url, public_key,
+        mail, password, redirectUrl, publicKey,
     } = body;
+
+    const isThirdPartyApplication = (redirectUrl || publicKey) ?? false;
+    const application = await ApplicationRepository.findOneBy({ publicKey });
+
+    const redirectUrlIsApplicationCallBack = application?.callbackUrls.includes(redirectUrl);
+    if (isThirdPartyApplication && (!application || !redirectUrlIsApplicationCallBack)) {
+        throw new ApiError('APPLICATION_ERROR');
+    }
 
     const user = await UserRepository.findOneBy({ mail }, ['password']);
 
@@ -50,7 +59,11 @@ export const authenticate = async (body: Record<string, string>): Promise<TokenP
         throw new ApiError('BAD_CREDENTIALS', 401);
     }
 
-    return generateTokenPair(String(user._id));
+    const keys = await generateTokenPair(String(user._id));
+
+    return isThirdPartyApplication
+        ? { ...keys, redirectUrl: `${redirectUrl}?token=${keys.token}&refresh_token=${keys.refreshToken}` }
+        : keys;
 };
 
 export const authorizeUserApplication = async (user: User, application: Application): Promise<void> => {
