@@ -10,9 +10,9 @@ export const putApplicationRoute = async (req: Request, res: Response): Promise<
     try {
         const { name } = req.body;
         // @ts-ignore
-        await createApplication(name, req.user);
+        const application = await createApplication(name, req.user);
 
-        res.status(201).send();
+        res.status(200).json({ data: application, error: {} });
     } catch (e) {
         res.status(e.statusCode).json({ data: {}, error: { code: e.code } });
     }
