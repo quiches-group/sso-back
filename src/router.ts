@@ -17,7 +17,7 @@ import { getMe, postUserActivation, putUserRoute } from './controllers/userContr
 import {
     postAuthorizeUserApplication,
     postLoginRoute,
-    postRefreshTokenRoute, postRevokeAuthorizedApplication,
+    postRefreshTokenRoute, postRevokeAuthorizedApplication, postVerifyToken,
 } from './controllers/authenticationController';
 import middlewares from './services/middlewares';
 
@@ -50,6 +50,7 @@ publicRouter.post('/login', postLoginRoute);
 publicRouter.post('/refresh', postRefreshTokenRoute);
 publicRouter.post('/authorize', [middlewares.isAuthenticated], postAuthorizeUserApplication);
 publicRouter.post('/revoke/:applicationId', [middlewares.isAuthenticated, middlewares.applicationExists], postRevokeAuthorizedApplication);
+publicRouter.post('/token/verify', postVerifyToken);
 
 const routerPub = (): Router => publicRouter;
 

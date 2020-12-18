@@ -101,3 +101,32 @@ export const revokeAuthorizeApplication = async (user: User, application: Applic
 
     await UserRepository.pullArray({ _id: user._id }, { applicationsRefs: application._id });
 };
+
+export const verifyTokenForApplication = (body: Record<string, string>) => new Promise((resolve, reject) => {
+    const { token, privateKey } = body;
+
+    jwt.verify(token, SECRET_KEY!, async (err, decoded) => {
+        if (err || !decoded) {
+            reject(new ApiError('BAD_CREDENTIALS', 401));
+            return;
+        }
+
+        // @ts-ignore
+        const { _id } = decoded;
+        const user = await UserRepository.findOneById(_id);
+
+        if (!user) {
+            reject(new ApiError('BAD_CREDENTIALS', 401));
+            return;
+        }
+
+        const application = await ApplicationRepository.findOneBy({ privateKey });
+
+        if (!application || !user.applicationsRefs.includes(application._id)) {
+            reject(new ApiError('APPLICATION_NOT_AUTHORIZE', 401));
+            return;
+        }
+
+        resolve(null);
+    });
+});

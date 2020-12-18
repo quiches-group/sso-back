@@ -1,5 +1,10 @@
 import { Request, Response } from 'express';
-import { authenticate, authorizeUserApplication, revokeAuthorizeApplication } from '../services/authenticationService';
+import {
+    authenticate,
+    authorizeUserApplication,
+    revokeAuthorizeApplication,
+    verifyTokenForApplication,
+} from '../services/authenticationService';
 
 export const postLoginRoute = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -43,6 +48,17 @@ export const postRevokeAuthorizedApplication = async (req: Request, res: Respons
     try {
         // @ts-ignore
         await revokeAuthorizeApplication(req.user, req.application);
+
+        res.status(201).send();
+    } catch (e) {
+        res.status(e.statusCode).json({ data: {}, error: { code: e.code } });
+    }
+};
+
+export const postVerifyToken = async (req: Request, res: Response): Promise<void> => {
+    try {
+        // @ts-ignore
+        await verifyTokenForApplication(req.body);
 
         res.status(201).send();
     } catch (e) {
