@@ -93,6 +93,10 @@ export const removeApplication = async (application: Application) : Promise<void
 };
 
 export const addCallbackUrl = async (application: Application, url: string): Promise<void> => {
+    if (application.callbackUrls.includes(url)) {
+        throw new ApiError('REDIRECT_URL_ALREADY_EXISTS', 400);
+    }
+
     await ApplicationRepository.pushArray({ _id: application._id }, { callbackUrls: url });
 };
 
