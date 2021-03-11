@@ -28,12 +28,6 @@ export const selectApplicationByPublicKey = async (publicKey: string): Promise<P
 export const listAllApplications = (): Promise<Application[]> =>
     ApplicationRepository.findManyBy({});
 
-export const listOwnedApplicationsByUser = (user: User): Promise<Application[]> =>
-    ApplicationRepository.getApplicationsOwnedBy(user._id);
-
-export const listAuthorizedApplications = (user: User): Promise<Application[]> =>
-    ApplicationRepository.getUserApplications(user);
-
 export const listApplicationKeys = (applicationId: string): Promise<{ privateKey?: string, publicKey?: string }> =>
     ApplicationRepository.findOneById(applicationId, ['privateKey', 'publicKey'])
         .then((application: Application | null) => application!)
@@ -90,16 +84,4 @@ export const removeApplication = async (application: Application) : Promise<void
     if (!result) {
         throw new ApiError('UNKNOWN_ERROR');
     }
-};
-
-export const addCallbackUrl = async (application: Application, url: string): Promise<void> => {
-    if (application.callbackUrls.includes(url)) {
-        throw new ApiError('REDIRECT_URL_ALREADY_EXISTS', 400);
-    }
-
-    await ApplicationRepository.pushArray({ _id: application._id }, { callbackUrls: url });
-};
-
-export const removeCallbackUrl = async (application: Application, url: string): Promise<void> => {
-    await ApplicationRepository.pullArray({ _id: application._id }, { callbackUrls: url });
 };

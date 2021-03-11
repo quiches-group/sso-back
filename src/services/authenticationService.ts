@@ -8,7 +8,8 @@ import ApiError from '../errors/ApiError';
 import RefreshTokenRepository from '../repositories/RefreshTokenRepository';
 import { Application } from '../models/Application';
 import { User } from '../models/User';
-import ApplicationRepository from '../repositories/ApplicationRepository';
+import { ApplicationUser } from '../models/ApplicationUser';
+import ApplicationUserRepository from '../repositories/ApplicationUserRepository';
 
 const { JWT_TOKEN_EXPIRATION_TIME, JWT_REFRESH_TOKEN_EXPIRATION_TIME } = process.env;
 export const SECRET_KEY = fs.readFileSync(`${__dirname}/../../key.JWT`, { encoding: 'utf-8' });
@@ -19,12 +20,13 @@ export const encryptPassword = (password: string): Promise<string> =>
 export const comparePassword = async ({ password, storedPassword }: { password: string; storedPassword: string }): Promise<boolean> =>
     bCrypt.compare(password, storedPassword);
 
-export const createToken = (_id: string): string =>
-    jwt.sign({ _id }, SECRET_KEY, { expiresIn: Number(JWT_TOKEN_EXPIRATION_TIME) });
+export const createToken = (user: User | ApplicationUser, application?: Application): string => ((!application)
+    ? jwt.sign({ _id: user._id }, SECRET_KEY, { expiresIn: Number(JWT_TOKEN_EXPIRATION_TIME) })
+    : jwt.sign({ _id: user._id, appid: application._id }, SECRET_KEY, { expiresIn: Number(JWT_TOKEN_EXPIRATION_TIME) }));
 
-export const createRefreshToken = async (_id: string): Promise<string> => {
+export const createRefreshToken = async (user: User | ApplicationUser): Promise<string> => {
     const expirationDate = moment().add(JWT_REFRESH_TOKEN_EXPIRATION_TIME, 'seconds').unix();
-    const token = cryptoJs.SHA256(`${_id}.${moment().unix()}.${expirationDate}`).toString();
+    const token = cryptoJs.SHA256(`${user._id}.${user.mail}.${moment().unix()}.${expirationDate}`).toString();
 
     const result = await RefreshTokenRepository.saveData({
         token,
@@ -35,23 +37,13 @@ export const createRefreshToken = async (_id: string): Promise<string> => {
 };
 
 type TokenPair = { token: string, refreshToken: string };
-const generateTokenPair = async (_id: string): Promise<TokenPair> => ({
-    token: await createToken(_id),
-    refreshToken: await createRefreshToken(_id),
+const generateTokenPair = async (user: User | ApplicationUser, application?: Application): Promise<TokenPair> => ({
+    token: await createToken(user, application),
+    refreshToken: await createRefreshToken(user),
 });
 
 export const authenticate = async (body: Record<string, string>): Promise<Record<string, string>> => {
-    const {
-        mail, password, redirectUrl, publicKey,
-    } = body;
-
-    const isThirdPartyApplication = (redirectUrl || publicKey) ?? false;
-    const application = await ApplicationRepository.findOneBy({ publicKey });
-
-    const redirectUrlIsApplicationCallBack = application?.callbackUrls.includes(redirectUrl);
-    if (isThirdPartyApplication && (!application || !redirectUrlIsApplicationCallBack)) {
-        throw new ApiError('APPLICATION_ERROR');
-    }
+    const { mail, password } = body;
 
     const user = await UserRepository.findOneBy({ mail }, ['password']);
 
@@ -59,51 +51,23 @@ export const authenticate = async (body: Record<string, string>): Promise<Record
         throw new ApiError('BAD_CREDENTIALS', 401);
     }
 
-    const keys = await generateTokenPair(String(user._id));
-
-    if (isThirdPartyApplication && !user.applicationsRefs.includes(application!._id)) {
-        return {
-            ...keys,
-            redirectUrl: `${redirectUrl}?token=${keys.token}&refresh_token=${keys.refreshToken}`,
-            nextAction: 'AUTHORIZE_APPLICATION',
-        };
-    } if (isThirdPartyApplication) {
-        return {
-            ...keys,
-            redirectUrl: `${redirectUrl}?token=${keys.token}&refresh_token=${keys.refreshToken}`,
-            nextAction: 'REDIRECT',
-        };
-    }
-
-    return keys;
+    return generateTokenPair(user!);
 };
 
-export const authorizeUserApplication = async (user: User, body: Record<string, string>): Promise<void> => {
-    const { publicKey, redirectUrl } = body;
+export const applicationUserAuthenticate = async (body: Record<string, string>, application: Application): Promise<Record<string, string>> => {
+    const { mail, password } = body;
 
-    const application = await ApplicationRepository.findOneBy({ publicKey });
+    const user = await ApplicationUserRepository.findOneBy({ mail }, ['password']);
 
-    if (!application || !application.callbackUrls.includes(redirectUrl)) {
-        throw new ApiError('APPLICATION_ERROR', 400);
+    if (!user || !(await comparePassword({ password, storedPassword: user.password }))) {
+        throw new ApiError('BAD_CREDENTIALS', 401);
     }
 
-    if (user.applicationsRefs.includes(application._id)) {
-        throw new ApiError('APPLICATION_ALREADY_AUTHORIZE', 400);
-    }
-
-    await UserRepository.pushArray({ _id: user._id }, { applicationsRefs: application._id });
+    return generateTokenPair(user!, application);
 };
 
-export const revokeAuthorizeApplication = async (user: User, application: Application): Promise<void> => {
-    if (!user.applicationsRefs.includes(application._id)) {
-        throw new ApiError('APPLICATION_NOT_AUTHORIZE', 400);
-    }
-
-    await UserRepository.pullArray({ _id: user._id }, { applicationsRefs: application._id });
-};
-
-export const verifyTokenForApplication = (body: Record<string, string>) => new Promise((resolve, reject) => {
-    const { token, privateKey } = body;
+export const verifyTokenForApplication = (body: Record<string, string>, application: Application) => new Promise((resolve, reject) => {
+    const { token } = body;
 
     jwt.verify(token, SECRET_KEY!, async (err, decoded) => {
         if (err || !decoded) {
@@ -113,17 +77,10 @@ export const verifyTokenForApplication = (body: Record<string, string>) => new P
 
         // @ts-ignore
         const { _id } = decoded;
-        const user = await UserRepository.findOneById(_id);
+        const user = await ApplicationUserRepository.findOneBy({ _id, applicationId: application._id });
 
         if (!user) {
             reject(new ApiError('BAD_CREDENTIALS', 401));
-            return;
-        }
-
-        const application = await ApplicationRepository.findOneBy({ privateKey });
-
-        if (!application || !user.applicationsRefs.includes(application._id)) {
-            reject(new ApiError('APPLICATION_NOT_AUTHORIZE', 401));
             return;
         }
 

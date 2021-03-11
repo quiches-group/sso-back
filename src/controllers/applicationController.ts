@@ -6,12 +6,9 @@ import {
     listApplicationKeys,
     listApplicationOwners,
     listApplicationUsers,
-    listOwnedApplicationsByUser,
-    listAuthorizedApplications,
     promoteApplicationOwner,
     downgradeApplicationOwner,
-    addCallbackUrl,
-    selectApplicationByPublicKey, removeCallbackUrl, removeApplication,
+    selectApplicationByPublicKey, removeApplication,
 } from '../services/applicationService';
 
 export const putApplicationRoute = async (req: Request, res: Response): Promise<void> => {
@@ -37,16 +34,16 @@ export const deleteApplicationRoute = async (req: Request, res: Response): Promi
     }
 };
 
-export const getOwnedApplications = async (req: Request, res: Response): Promise<void> => {
-    try {
-        // @ts-ignore
-        const applications = await listOwnedApplicationsByUser(req.user);
-
-        res.status(200).json({ data: applications, error: {} });
-    } catch (e) {
-        res.status(e.statusCode).json({ data: {}, error: { code: e.code } });
-    }
-};
+// export const getOwnedApplications = async (req: Request, res: Response): Promise<void> => {
+//     try {
+//         // @ts-ignore
+//         const applications = await listOwnedApplicationsByUser(req.user);
+//
+//         res.status(200).json({ data: applications, error: {} });
+//     } catch (e) {
+//         res.status(e.statusCode).json({ data: {}, error: { code: e.code } });
+//     }
+// };
 
 export const postGenerateApplicationKey = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -58,7 +55,7 @@ export const postGenerateApplicationKey = async (req: Request, res: Response): P
     }
 };
 
-export const getApplicationBySlug = async (req: Request, res: Response): Promise<void> => {
+export const getApplicationById = async (req: Request, res: Response): Promise<void> => {
     // @ts-ignore
     res.status(200).json({ data: req.application, error: {} });
 };
@@ -88,17 +85,6 @@ export const getApplicationKeys = async (req: Request, res: Response): Promise<v
         const keys = await listApplicationKeys(req.params.applicationId);
 
         res.status(200).json({ data: keys, error: {} });
-    } catch (e) {
-        res.status(e.statusCode).json({ data: {}, error: { code: e.code } });
-    }
-};
-
-export const getAuthorizedApplications = async (req: Request, res: Response): Promise<void> => {
-    try {
-        // @ts-ignore
-        const applications = await listAuthorizedApplications(req.user);
-
-        res.status(200).json({ data: applications, error: {} });
     } catch (e) {
         res.status(e.statusCode).json({ data: {}, error: { code: e.code } });
     }
@@ -141,28 +127,6 @@ export const postDowngradeApplicationOwner = async (req: Request, res: Response)
     try {
         // @ts-ignore
         await downgradeApplicationOwner(req.application, req.params.userId);
-
-        res.status(201).send();
-    } catch (e) {
-        res.status(e.statusCode).json({ data: {}, error: { code: e.code } });
-    }
-};
-
-export const postAddCallbackUrl = async (req: Request, res: Response): Promise<void> => {
-    try {
-        // @ts-ignore
-        await addCallbackUrl(req.application, req.body.callbackUrl);
-
-        res.status(201).send();
-    } catch (e) {
-        res.status(e.statusCode).json({ data: {}, error: { code: e.code } });
-    }
-};
-
-export const deleteCallbackUrl = async (req: Request, res: Response): Promise<void> => {
-    try {
-        // @ts-ignore
-        await removeCallbackUrl(req.application, req.body.callbackUrl);
 
         res.status(201).send();
     } catch (e) {

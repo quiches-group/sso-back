@@ -6,7 +6,7 @@ import ApplicationRepository from '../repositories/ApplicationRepository';
 
 type Token = { _id: string }
 
-const isAuthenticated = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+const userIsAuthenticated = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const { authorization } = req.headers;
 
     if (!authorization) {
@@ -35,7 +35,7 @@ const isAuthenticated = async (req: Request, res: Response, next: NextFunction):
     });
 };
 
-const isAdmin = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+const userIsAdmin = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     // @ts-ignore
     const { user } = req;
 
@@ -60,11 +60,40 @@ const applicationExists = async (req: Request, res: Response, next: NextFunction
     next();
 };
 
-const applicationExistsBySlug = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    const application = await ApplicationRepository.findOneBy({ slug: req.params.applicationSlug });
+const isAuthenticatedByPublicKey = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const { publicKey } = req.query;
+
+    if (!publicKey) {
+        res.status(401).json({ errors: { code: 'UNAVAILABLE_PUBLIC_KEY' }, data: {} });
+        return;
+    }
+
+    // @ts-ignore
+    const application = await ApplicationRepository.findOneBy({ publicKey });
 
     if (!application) {
-        res.status(404).json({ errors: { code: 'CANNOT_FIND_APPLICATION' }, data: {} });
+        res.status(401).json({ errors: { code: 'UNAVAILABLE_PUBLIC_KEY' }, data: {} });
+        return;
+    }
+
+    // @ts-ignore
+    req.application = application;
+    next();
+};
+
+const isAuthenticatedByPrivateKey = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const { privateKey } = req.query;
+
+    if (!privateKey) {
+        res.status(401).json({ errors: { code: 'UNAVAILABLE_PRIVATE_KEY' }, data: {} });
+        return;
+    }
+
+    // @ts-ignore
+    const application = await ApplicationRepository.findOneBy({ privateKey });
+
+    if (!application) {
+        res.status(401).json({ errors: { code: 'UNAVAILABLE_PRIVATE_KEY' }, data: {} });
         return;
     }
 
@@ -100,10 +129,11 @@ const userInParamsIsCurrentUser = (req: Request, res: Response, next: NextFuncti
 };
 
 export default {
-    isAuthenticated,
-    isAdmin,
+    isAuthenticated: userIsAuthenticated,
+    isAdmin: userIsAdmin,
     userInParamsIsCurrentUser,
     isApplicationOwner,
     applicationExists,
-    applicationExistsBySlug,
+    isAuthenticatedByPublicKey,
+    isAuthenticatedByPrivateKey,
 };
