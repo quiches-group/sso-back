@@ -24,14 +24,15 @@ export const createToken = (user: User | ApplicationUser, application?: Applicat
     ? jwt.sign({ _id: user._id }, SECRET_KEY, { expiresIn: Number(JWT_TOKEN_EXPIRATION_TIME) })
     : jwt.sign({ _id: user._id, appid: application._id }, SECRET_KEY, { expiresIn: Number(JWT_TOKEN_EXPIRATION_TIME) }));
 
-export const createRefreshToken = async (user: User | ApplicationUser): Promise<string> => {
+export const createRefreshToken = async (user: User | ApplicationUser, application?: Application): Promise<string> => {
     const expirationDate = moment().add(JWT_REFRESH_TOKEN_EXPIRATION_TIME, 'seconds').unix();
     const token = cryptoJs.SHA256(`${user._id}.${user.mail}.${moment().unix()}.${expirationDate}`).toString();
 
-    const result = await RefreshTokenRepository.saveData({
-        token,
-        expirationDate,
-    });
+    const data = (!application)
+        ? { token, expirationDate, userId: user._id }
+        : { token, expirationDate, applicationUserId: user._id };
+
+    const result = await RefreshTokenRepository.saveData(data);
 
     return result.token;
 };
@@ -66,7 +67,7 @@ export const applicationUserAuthenticate = async (body: Record<string, string>, 
     return generateTokenPair(user!, application);
 };
 
-export const verifyTokenForApplication = (body: Record<string, string>, application: Application) => new Promise((resolve, reject) => {
+export const verifyTokenForApplication = (body: Record<string, string>, application: Application): Promise<void> => new Promise((resolve, reject) => {
     const { token } = body;
 
     jwt.verify(token, SECRET_KEY!, async (err, decoded) => {
@@ -84,6 +85,26 @@ export const verifyTokenForApplication = (body: Record<string, string>, applicat
             return;
         }
 
-        resolve(null);
+        resolve();
     });
 });
+
+export const requestNewToken = async (refreshToken: string, application?: Application): Promise<TokenPair> => {
+    const storedToken = await RefreshTokenRepository.findOneBy({ token: refreshToken });
+
+    if (!storedToken || !storedToken.active || storedToken.expirationDate < moment().unix()) {
+        throw new ApiError('CANT_REFRESH_TOKEN', 401);
+    }
+
+    RefreshTokenRepository.updateOneBy({ _id: storedToken._id }, { active: false });
+
+    const user = (!storedToken.applicationUserId)
+        ? await UserRepository.findOneBy({ _id: storedToken.userId })
+        : await ApplicationUserRepository.findOneBy({ _id: storedToken.applicationUserId });
+
+    if (!user) {
+        throw new ApiError('CANT_REFRESH_TOKEN', 401);
+    }
+
+    return generateTokenPair(user, application);
+};

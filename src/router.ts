@@ -2,7 +2,6 @@ import { Application, Router } from 'express';
 import {
     getApplicationKeys,
     getApplicationOwners,
-    getApplicationUsers,
     postGenerateApplicationKey,
     putApplicationRoute,
     postPromoteApplicationOwner,
@@ -44,19 +43,17 @@ router.put('/applications', [middlewares.isAuthenticated], putApplicationRoute);
 router.delete('/applications/single/:applicationId', [middlewares.isAuthenticated, middlewares.applicationExists, middlewares.isApplicationOwner], deleteApplicationRoute);
 router.get('/applications/single/:applicationId', [middlewares.isAuthenticated, middlewares.applicationExists, middlewares.isApplicationOwner], getApplicationById);
 router.get('/applications/single/:publicKey/key', [middlewares.isAuthenticated], getApplicationByPublicKey);
-// publicRouter.get('/applications/owned', [middlewares.isAuthenticated], getOwnedApplications);
 router.get('/application/:applicationId/owners', [middlewares.isAuthenticated, middlewares.applicationExists, middlewares.isApplicationOwner], getApplicationOwners);
 router.post('/application/:applicationId/promote/:userId', [middlewares.isAuthenticated, middlewares.applicationExists, middlewares.isApplicationOwner], postPromoteApplicationOwner);
 router.post('/application/:applicationId/downgrade/:userId', [middlewares.isAuthenticated, middlewares.applicationExists, middlewares.isApplicationOwner], postDowngradeApplicationOwner);
-// publicRouter.get('/application/:applicationId/users', [middlewares.isAuthenticated, middlewares.applicationExists, middlewares.isApplicationOwner], getApplicationUsers);
 router.get('/applications/:applicationId/keys', [middlewares.isAuthenticated, middlewares.applicationExists, middlewares.isApplicationOwner], getApplicationKeys);
 router.post('/applications/:applicationId/keys', [middlewares.isAuthenticated, middlewares.applicationExists, middlewares.isApplicationOwner], postGenerateApplicationKey);
+// publicRouter.get('/application/:applicationId/users', [middlewares.isAuthenticated, middlewares.applicationExists, middlewares.isApplicationOwner], getApplicationUsers);
+// publicRouter.get('/applications/owned', [middlewares.isAuthenticated], getOwnedApplications);
 
 //  Application [ADMIN]
 // publicRouter.get('/applications', [middlewares.isAuthenticated, middlewares.isAdmin], getAllApplication);
 
-const appRouter = (): Router => router;
-
 export const useRouters = (app: Application): void => {
-    app.use('/api', appRouter());
+    app.use('/api', router);
 };
