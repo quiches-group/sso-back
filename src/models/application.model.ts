@@ -5,6 +5,8 @@ export type ApplicationDocument = Application & Document;
 
 @Schema()
 export class Application {
+  _id: Types.ObjectId;
+
   @Prop({ unique: true, required: true })
   name: string;
 
@@ -17,7 +19,7 @@ export class Application {
   @Prop()
   privateKey?: string;
 
-  @Prop([{ type: Types.ObjectId, ref: 'User' }])
+  @Prop({ ref: 'User' })
   ownerRefs: Types.ObjectId[];
 }
 

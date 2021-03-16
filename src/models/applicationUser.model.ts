@@ -5,6 +5,8 @@ export type ApplicationUserDocument = ApplicationUser & Document;
 
 @Schema()
 export class ApplicationUser {
+  _id: Types.ObjectId;
+
   @Prop({ unique: true, required: true })
   mail: string;
 

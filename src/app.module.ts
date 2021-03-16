@@ -12,6 +12,7 @@ import { UserRepository } from './repositories/user.repository';
 import { ApplicationRepository } from './repositories/application.repository';
 import { ApplicationUserRepository } from './repositories/applicationUser.repository';
 import { RefreshTokenRepository } from './repositories/refreshToken.repository';
+import { UserAuthenticationModule } from './epics/user-authentication/user-authentication.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { RefreshTokenRepository } from './repositories/refreshToken.repository';
       { name: ApplicationUser.name, schema: ApplicationUserSchema },
       { name: RefreshToken.name, schema: RefreshTokenSchema },
     ]),
+    UserAuthenticationModule,
   ],
   controllers: [],
   providers: [
