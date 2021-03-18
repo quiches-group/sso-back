@@ -11,7 +11,7 @@ import {
 import { getMe, postUserActivation, putUserRoute } from './controllers/userController';
 import {
     postLoginRoute,
-    postRefreshTokenRoute,
+    postRefreshTokenRoute, postUserVerifyToken,
 } from './controllers/userAuthenticationController';
 import { putApplicationUserRoute, getCurrentApplicationUser } from './controllers/applicationUserController';
 import middlewares from './services/middlewares';
@@ -23,6 +23,7 @@ const router: Router = Router();
 router.put('/users', putUserRoute);
 router.get('/users/me', [middlewares.isAuthenticated], getMe);
 router.post('/users/activation', postUserActivation);
+router.post('/users/verify-token', postUserVerifyToken);
 
 //  User Security [PUBLIC]
 router.post('/login', postLoginRoute);

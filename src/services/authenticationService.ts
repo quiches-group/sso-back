@@ -67,7 +67,7 @@ export const applicationUserAuthenticate = async (body: Record<string, string>, 
     return generateTokenPair(user!, application);
 };
 
-export const verifyTokenForApplication = (body: Record<string, string>, application: Application): Promise<void> => new Promise((resolve, reject) => {
+export const verifyApplicationUserToken = (body: Record<string, string>, application: Application): Promise<void> => new Promise((resolve, reject) => {
     const { token } = body;
 
     jwt.verify(token, SECRET_KEY!, async (err, decoded) => {
@@ -79,6 +79,28 @@ export const verifyTokenForApplication = (body: Record<string, string>, applicat
         // @ts-ignore
         const { _id } = decoded;
         const user = await ApplicationUserRepository.findOneBy({ _id, applicationId: application._id });
+
+        if (!user) {
+            reject(new ApiError('BAD_CREDENTIALS', 401));
+            return;
+        }
+
+        resolve();
+    });
+});
+
+export const verifyUserToken = (body: Record<string, string>): Promise<void> => new Promise((resolve, reject) => {
+    const { token } = body;
+
+    jwt.verify(token, SECRET_KEY!, async (err, decoded) => {
+        if (err || !decoded) {
+            reject(new ApiError('BAD_CREDENTIALS', 401));
+            return;
+        }
+
+        // @ts-ignore
+        const { _id } = decoded;
+        const user = await UserRepository.findOneBy({ _id });
 
         if (!user) {
             reject(new ApiError('BAD_CREDENTIALS', 401));

@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import {
     applicationUserAuthenticate,
-    verifyTokenForApplication,
+    verifyApplicationUserToken,
 } from '../services/authenticationService';
 import { Application } from '../models/Application';
 
@@ -25,7 +25,7 @@ export const postApplicationUserVerifyToken = async (req: Request, res: Response
     try {
         // @ts-ignore
         const application = req.application as Application;
-        await verifyTokenForApplication(req.body, application);
+        await verifyApplicationUserToken(req.body, application);
 
         res.status(203).send();
     } catch (e) {
