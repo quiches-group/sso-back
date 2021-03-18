@@ -23,7 +23,7 @@ const router: Router = Router();
 router.put('/users', putUserRoute);
 router.get('/users/me', [middlewares.isAuthenticated], getMe);
 router.post('/users/activation', postUserActivation);
-router.post('/users/verify-token', postUserVerifyToken);
+router.post('/users/verify-token', [middlewares.isAuthenticated], postUserVerifyToken);
 
 //  User Security [PUBLIC]
 router.post('/login', postLoginRoute);

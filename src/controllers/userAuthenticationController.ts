@@ -19,12 +19,5 @@ export const postRefreshTokenRoute = async (req: Request, res: Response): Promis
 };
 
 export const postUserVerifyToken = async (req: Request, res: Response): Promise<void> => {
-    try {
-        // @ts-ignore
-        await verifyUserToken(req.body);
-
-        res.status(203).send();
-    } catch (e) {
-        res.status(e.statusCode).json({ data: {}, error: { code: e.code } });
-    }
+    res.status(203).send();
 };
