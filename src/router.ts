@@ -1,5 +1,5 @@
 import { Application, Router } from 'express';
-import mongoose, { mongo } from 'mongoose';
+import mongoose from 'mongoose';
 import {
     getApplicationKeys,
     getApplicationOwners,
@@ -50,7 +50,7 @@ router.post('/refresh', postRefreshTokenRoute);
 router.put('/application-users', [middlewares.isAuthenticatedByPublicKey], putApplicationUserRoute);
 router.get('/application-users/single/:userId', [middlewares.isAuthenticatedByPublicKey], getCurrentApplicationUser);
 // publicRouter.post('/users/activation', );
-router.post('/application-users/verify-token', [middlewares.isAuthenticatedByPrivateKey], postApplicationUserVerifyToken);
+router.post('/application-users/verify-token', postApplicationUserVerifyToken);
 
 //  ApplicationUser Security [AUTH BY PUBLIC KEY]
 router.post('/application-users/login', [middlewares.isAuthenticatedByPublicKey], postApplicationUserLoginRoute);
