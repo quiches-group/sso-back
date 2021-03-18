@@ -1,4 +1,5 @@
 import { Application, Router } from 'express';
+import mongoose, { mongo } from 'mongoose';
 import {
     getApplicationKeys,
     getApplicationOwners,
@@ -18,6 +19,22 @@ import middlewares from './services/middlewares';
 import { postApplicationUserLoginRoute, postApplicationUserVerifyToken } from './controllers/applicationUserAuthenticationController';
 
 const router: Router = Router();
+
+router.get('/status', (req, res) => {
+    const mongooseStatus = mongoose.connection.readyState;
+
+    const data = {
+        'database-status': mongooseStatus === 1 ? 'up' : 'down',
+    };
+
+    if (mongooseStatus !== 1) {
+        res.status(500).json(data);
+
+        return;
+    }
+
+    res.json(data);
+});
 
 //  Users [PUBLIC]
 router.put('/users', putUserRoute);
