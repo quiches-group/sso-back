@@ -7,7 +7,7 @@ import {
     putApplicationRoute,
     postPromoteApplicationOwner,
     postDowngradeApplicationOwner,
-    getApplicationById, getApplicationByPublicKey, deleteApplicationRoute,
+    getApplicationById, getApplicationByPrivateKey, deleteApplicationRoute,
 } from './controllers/applicationController';
 import { getMe, postUserActivation, putUserRoute } from './controllers/userController';
 import {
@@ -60,7 +60,7 @@ router.post('/application-users/refresh', [middlewares.isAuthenticatedByPublicKe
 router.put('/applications', [middlewares.isAuthenticated], putApplicationRoute);
 router.delete('/applications/single/:applicationId', [middlewares.isAuthenticated, middlewares.applicationExists, middlewares.isApplicationOwner], deleteApplicationRoute);
 router.get('/applications/single/:applicationId', [middlewares.isAuthenticated, middlewares.applicationExists, middlewares.isApplicationOwner], getApplicationById);
-router.get('/applications/single/:publicKey/key', [middlewares.isAuthenticated], getApplicationByPublicKey);
+router.get('/applications/single/:privateKey/key', getApplicationByPrivateKey);
 router.get('/application/:applicationId/owners', [middlewares.isAuthenticated, middlewares.applicationExists, middlewares.isApplicationOwner], getApplicationOwners);
 router.post('/application/:applicationId/promote/:userId', [middlewares.isAuthenticated, middlewares.applicationExists, middlewares.isApplicationOwner], postPromoteApplicationOwner);
 router.post('/application/:applicationId/downgrade/:userId', [middlewares.isAuthenticated, middlewares.applicationExists, middlewares.isApplicationOwner], postDowngradeApplicationOwner);

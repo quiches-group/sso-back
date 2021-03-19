@@ -15,8 +15,8 @@ export const generateApplicationKeys = async (applicationId: string): Promise<vo
     await ApplicationRepository.updateOneBy({ _id: applicationId }, keys);
 };
 
-export const selectApplicationByPublicKey = async (publicKey: string): Promise<PublicApplication> => {
-    const application = await ApplicationRepository.findApplicationByPublicKey(publicKey);
+export const selectApplicationByPrivateKey = async (privateKey: string): Promise<Application> => {
+    const application = await ApplicationRepository.findOneBy({ privateKey });
 
     if (!application) {
         throw new ApiError('CANNOT_FIND_APPLICATION', 404);

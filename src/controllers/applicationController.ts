@@ -8,7 +8,7 @@ import {
     listApplicationUsers,
     promoteApplicationOwner,
     downgradeApplicationOwner,
-    selectApplicationByPublicKey, removeApplication,
+    selectApplicationByPrivateKey, removeApplication,
 } from '../services/applicationService';
 
 export const putApplicationRoute = async (req: Request, res: Response): Promise<void> => {
@@ -60,9 +60,9 @@ export const getApplicationById = async (req: Request, res: Response): Promise<v
     res.status(200).json({ data: req.application, error: {} });
 };
 
-export const getApplicationByPublicKey = async (req: Request, res: Response): Promise<void> => {
+export const getApplicationByPrivateKey = async (req: Request, res: Response): Promise<void> => {
     try {
-        const application = await selectApplicationByPublicKey(req.params.publicKey);
+        const application = await selectApplicationByPrivateKey(req.params.privateKey);
 
         res.status(200).json({ data: application, error: {} });
     } catch (e) {
