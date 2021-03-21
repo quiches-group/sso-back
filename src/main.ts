@@ -9,7 +9,16 @@ const useSwagger = (app: INestApplication) => {
     .setTitle('Quiches SSO Documentation')
     .setDescription('The Quiches SSO offcial API documentation')
     .setVersion('1.0')
-    .addBearerAuth()
+    .addSecurity('Bearer', {
+      type: 'http',
+      scheme: 'bearer',
+      bearerFormat: 'JWT',
+    })
+    .addSecurity('Public Key', {
+      in: 'query',
+      type: 'apiKey',
+      name: 'publicKey',
+    })
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);

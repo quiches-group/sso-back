@@ -3,19 +3,18 @@ import {
   Controller,
   Get,
   HttpCode,
-  Post,
   Put,
   Request,
   UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import {
-  ApiBearerAuth,
   ApiOkResponse,
   ApiTags,
   ApiCreatedResponse,
   ApiUnauthorizedResponse,
   ApiBadRequestResponse,
+  ApiSecurity,
 } from '@nestjs/swagger';
 import { UserIsAuthenticatedGuard } from '../../guards/user-is-authenticated.guard';
 import { RegisterDto } from './dto/register.dto';
@@ -28,7 +27,7 @@ export class UserController {
   @Get('me')
   @UseGuards(UserIsAuthenticatedGuard)
   // @ApiOperation({ summary: '' })
-  @ApiBearerAuth()
+  @ApiSecurity('Bearer')
   @ApiOkResponse()
   @ApiUnauthorizedResponse()
   getCurrentUser(@Request() req: Request) {
