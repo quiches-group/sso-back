@@ -4,6 +4,7 @@ import * as moment from 'moment';
 import * as bCrypt from 'bcrypt';
 import * as cryptoJs from 'crypto-js';
 import * as jwt from 'jsonwebtoken';
+import * as Crypto from 'crypto';
 import { UserRepository } from '../repositories/user.repository';
 import { RefreshTokenRepository } from '../repositories/refreshToken.repository';
 import { User } from '../models/user.model';
@@ -73,4 +74,6 @@ export class AuthenticationService {
 
     return result.token;
   };
+
+  createActivationKey = () => Crypto.randomBytes(50).toString('hex');
 }

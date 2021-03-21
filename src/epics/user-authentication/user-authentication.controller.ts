@@ -1,6 +1,6 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { UserAuthenticationService } from './user-authentication.service';
-import { LoginDTO } from './dto/loginDTO';
+import { LoginDto } from './dto/login.dto';
 import {
   ApiOkResponse,
   ApiTags,
@@ -14,10 +14,10 @@ export class UserAuthenticationController {
     private readonly userAuthenticationService: UserAuthenticationService,
   ) {}
 
+  @Post('login')
   @ApiOkResponse()
   @ApiUnauthorizedResponse()
-  @Post('login')
-  async loginUser(@Body() params: LoginDTO) {
+  async loginUser(@Body() params: LoginDto) {
     return await this.userAuthenticationService.loginUser(params);
   }
 
@@ -25,6 +25,6 @@ export class UserAuthenticationController {
   // @ApiUnauthorizedResponse()
   // @Post('refresh')
   // async refreshToken() {
-  //   //  TODO: Implement
+  //   //  TODO: Implement Refresh token endpoint
   // }
 }

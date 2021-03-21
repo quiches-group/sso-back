@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { LoginDTO } from './dto/loginDTO';
+import { LoginDto } from './dto/login.dto';
 import { UserRepository } from '../../repositories/user.repository';
 import { AuthenticationService } from '../../services/authentication.service';
 
@@ -10,7 +10,7 @@ export class UserAuthenticationService {
     private readonly authenticationService: AuthenticationService,
   ) {}
 
-  loginUser = async (params: LoginDTO) => {
+  loginUser = async (params: LoginDto) => {
     const user = await this.userRepository.findOneBy({ mail: params.mail }, [
       'password',
     ]);
