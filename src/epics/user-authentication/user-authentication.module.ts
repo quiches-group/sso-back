@@ -1,29 +1,12 @@
 import { Module } from '@nestjs/common';
 import { UserAuthenticationController } from './user-authentication.controller';
 import { UserAuthenticationService } from './user-authentication.service';
-import { UserRepository } from '../../repositories/user.repository';
-import { RefreshTokenRepository } from '../../repositories/refreshToken.repository';
-import { MongooseModule } from '@nestjs/mongoose';
-import { User, UserSchema } from '../../models/user.model';
-import {
-  RefreshToken,
-  RefreshTokenSchema,
-} from '../../models/refreshToken.model';
 import { AuthenticationService } from '../../services/authentication.service';
+import { MongoModule } from '../app/mongo.module';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([
-      { name: User.name, schema: UserSchema },
-      { name: RefreshToken.name, schema: RefreshTokenSchema },
-    ]),
-  ],
+  imports: [MongoModule],
   controllers: [UserAuthenticationController],
-  providers: [
-    AuthenticationService,
-    UserAuthenticationService,
-    UserRepository,
-    RefreshTokenRepository,
-  ],
+  providers: [AuthenticationService, UserAuthenticationService],
 })
 export class UserAuthenticationModule {}

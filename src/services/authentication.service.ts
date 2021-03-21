@@ -5,7 +5,6 @@ import * as bCrypt from 'bcrypt';
 import * as cryptoJs from 'crypto-js';
 import * as jwt from 'jsonwebtoken';
 import * as Crypto from 'crypto';
-import { UserRepository } from '../repositories/user.repository';
 import { RefreshTokenRepository } from '../repositories/refreshToken.repository';
 import { User } from '../models/user.model';
 import { ApplicationUser } from '../models/applicationUser.model';
@@ -16,7 +15,6 @@ type TokenPair = { token: string; refreshToken: string };
 @Injectable()
 export class AuthenticationService {
   constructor(
-    private readonly userRepository: UserRepository,
     private readonly refreshTokenRepository: RefreshTokenRepository,
   ) {}
 
