@@ -5,10 +5,10 @@ import * as bCrypt from 'bcrypt';
 import { User } from '../../models/user.model';
 import { ApplicationUser } from '../../models/applicationUser.model';
 import { Application } from '../../models/application.model';
-import jwt from 'jsonwebtoken';
-import moment from 'moment';
+import * as jwt from 'jsonwebtoken';
+import * as moment from 'moment';
 import config from '../../config';
-import cryptoJs from 'crypto-js';
+import * as cryptoJs from 'crypto-js';
 import { RefreshTokenRepository } from '../../repositories/refreshToken.repository';
 
 type TokenPair = { token: string; refreshToken: string };
@@ -24,12 +24,10 @@ export class UserAuthenticationService {
     const user = await this.userRepository.findOneBy({ mail: params.mail }, [
       'password',
     ]);
-    console.log(await this.encryptPassword(params.password));
-    console.log(user);
     if (
       !user ||
       !(await this.comparePassword({
-        password: user.password,
+        password: params.password,
         storedPassword: user.password,
       }))
     ) {

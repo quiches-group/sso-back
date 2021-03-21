@@ -6,7 +6,7 @@ if (!process.env.NODE_ENV) {
 }
 
 export default () => ({
-  mongoUrl: process.env.MONGO_URL,
+  mongoUrl: process.env.DB_URL,
   port: process.env.PORT,
   jwt: {
     tokenExpirationTime: process.env.JWT_TOKEN_EXPIRATION_TIME,

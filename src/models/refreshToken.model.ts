@@ -19,7 +19,7 @@ export class RefreshToken {
   @Prop({ ref: 'ApplicationUser' })
   applicationUserId: Types.ObjectId;
 
-  @Prop({ unique: true, required: true })
+  @Prop({ unique: true, required: true, default: false })
   active: boolean;
 }
 
