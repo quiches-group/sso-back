@@ -1,23 +1,13 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { LoginDTO } from './dto/loginDTO';
 import { UserRepository } from '../../repositories/user.repository';
-import * as bCrypt from 'bcrypt';
-import { User } from '../../models/user.model';
-import { ApplicationUser } from '../../models/applicationUser.model';
-import { Application } from '../../models/application.model';
-import * as jwt from 'jsonwebtoken';
-import * as moment from 'moment';
-import config from '../../config';
-import * as cryptoJs from 'crypto-js';
-import { RefreshTokenRepository } from '../../repositories/refreshToken.repository';
-
-type TokenPair = { token: string; refreshToken: string };
+import { AuthenticationService } from '../../services/authentication.service';
 
 @Injectable()
 export class UserAuthenticationService {
   constructor(
     private readonly userRepository: UserRepository,
-    private readonly refreshTokenRepository: RefreshTokenRepository,
+    private readonly authenticationService: AuthenticationService,
   ) {}
 
   loginUser = async (params: LoginDTO) => {
@@ -26,7 +16,7 @@ export class UserAuthenticationService {
     ]);
     if (
       !user ||
-      !(await this.comparePassword({
+      !(await this.authenticationService.comparePassword({
         password: params.password,
         storedPassword: user.password,
       }))
@@ -37,61 +27,6 @@ export class UserAuthenticationService {
       );
     }
 
-    return this.generateTokenPair(user);
-  };
-
-  private encryptPassword = async (password: string): Promise<string> =>
-    bCrypt.hash(password, 15);
-
-  private comparePassword = async ({
-    password,
-    storedPassword,
-  }: {
-    password: string;
-    storedPassword: string;
-  }): Promise<boolean> => bCrypt.compare(password, storedPassword);
-
-  private generateTokenPair = async (
-    user: User | ApplicationUser,
-    application?: Application,
-  ): Promise<TokenPair> => ({
-    token: await this.createToken(user, application),
-    refreshToken: await this.createRefreshToken(user),
-  });
-
-  private createToken = (
-    user: User | ApplicationUser,
-    application?: Application,
-  ): string =>
-    !application
-      ? jwt.sign({ _id: user._id }, config().jwt.secretKey, {
-          expiresIn: Number(config().jwt.tokenExpirationTime),
-        })
-      : jwt.sign(
-          { _id: user._id, appid: application._id },
-          config().jwt.secretKey,
-          {
-            expiresIn: Number(config().jwt.tokenExpirationTime),
-          },
-        );
-
-  private createRefreshToken = async (
-    user: User | ApplicationUser,
-    application?: Application,
-  ): Promise<string> => {
-    const expirationDate = moment()
-      .add(config().jwt.refreshTokenExpirationTime, 'seconds')
-      .unix();
-    const token = cryptoJs
-      .SHA256(`${user._id}.${user.mail}.${moment().unix()}.${expirationDate}`)
-      .toString();
-
-    const data = !application
-      ? { token, expirationDate, userId: user._id }
-      : { token, expirationDate, applicationUserId: user._id };
-
-    const result = await this.refreshTokenRepository.insert(data);
-
-    return result.token;
+    return this.authenticationService.generateTokenPair(user);
   };
 }

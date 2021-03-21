@@ -9,6 +9,7 @@ import {
   RefreshToken,
   RefreshTokenSchema,
 } from '../../models/refreshToken.model';
+import { AuthenticationService } from '../../services/authentication.service';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import {
   ],
   controllers: [UserAuthenticationController],
   providers: [
+    AuthenticationService,
     UserAuthenticationService,
     UserRepository,
     RefreshTokenRepository,
