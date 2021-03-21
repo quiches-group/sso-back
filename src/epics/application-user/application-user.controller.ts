@@ -11,6 +11,7 @@ import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
   ApiNoContentResponse,
+  ApiOkResponse,
   ApiQuery,
   ApiSecurity,
   ApiTags,
@@ -20,6 +21,7 @@ import { ApplicationUserService } from './application-user.service';
 import { IsAuthenticatedWithPublicKeyGuard } from '../../guards/is-authenticated-with-public-key.guard';
 import { ApplicationUserRegisterDto } from './dto/application-user-register.dto';
 import { TokenDto } from './dto/token.dto';
+import { LoginDto } from '../user/dto/login.dto';
 
 @Controller('application-users')
 @ApiTags('Application Users')
@@ -59,4 +61,29 @@ export class ApplicationUserController {
   async activeApplicationUser(@Body() body: TokenDto) {
     await this.applicationUserService.verifyToken(body);
   }
+
+  @Post('login')
+  @UseGuards(IsAuthenticatedWithPublicKeyGuard)
+  @ApiOkResponse()
+  @ApiUnauthorizedResponse()
+  @ApiSecurity('PublicKey')
+  async loginApplicationUser(
+    @Request() request: Request,
+    @Body() params: LoginDto,
+  ) {
+    // @ts-ignore
+    const application = request.application;
+
+    return await this.applicationUserService.loginApplicationUser(
+      params,
+      application,
+    );
+  }
+
+  // @ApiOkResponse()
+  // @ApiUnauthorizedResponse()
+  // @Post('refresh')
+  // async refreshToken() {
+  //   //  TODO: Implement Refresh token endpoint
+  // }
 }

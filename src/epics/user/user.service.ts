@@ -1,8 +1,7 @@
 import {
   BadRequestException,
-  HttpException,
-  HttpStatus,
   Injectable,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { UserRepository } from '../../repositories/user.repository';
 import { UserRegisterDto } from './dto/user-register.dto';
@@ -52,10 +51,7 @@ export class UserService {
         storedPassword: user.password,
       }))
     ) {
-      throw new HttpException(
-        { statusCode: HttpStatus.UNAUTHORIZED, message: 'UNAUTHORIZED' },
-        HttpStatus.UNAUTHORIZED,
-      );
+      throw new UnauthorizedException();
     }
 
     return this.authenticationService.generateTokenPair(user);

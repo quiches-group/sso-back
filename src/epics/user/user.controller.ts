@@ -22,11 +22,11 @@ import { UserRegisterDto } from './dto/user-register.dto';
 import { LoginDto } from './dto/login.dto';
 
 @ApiTags('Users')
-@Controller()
+@Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Get('users/me')
+  @Get('me')
   @UseGuards(UserIsAuthenticatedGuard)
   // @ApiOperation({ summary: '' })
   @ApiSecurity('Bearer')
@@ -37,7 +37,7 @@ export class UserController {
     return req.user;
   }
 
-  @Put('users')
+  @Put()
   @HttpCode(201)
   @ApiCreatedResponse()
   @ApiBadRequestResponse()

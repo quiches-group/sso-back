@@ -1,10 +1,15 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ApplicationUserRegisterDto } from './dto/application-user-register.dto';
 import { ApplicationUserRepository } from '../../repositories/applicationUser.repository';
 import { AuthenticationService } from '../../services/authentication.service';
 import { Application } from '../../models/application.model';
 import { TokenDto } from './dto/token.dto';
 import { ApplicationUser } from '../../models/applicationUser.model';
+import { LoginDto } from '../user/dto/login.dto';
 
 @Injectable()
 export class ApplicationUserService {
@@ -44,4 +49,22 @@ export class ApplicationUserService {
 
   verifyToken = ({ token }: TokenDto): Promise<ApplicationUser> =>
     this.authenticationService.verifyApplicationUserToken(token);
+
+  loginApplicationUser = async (params: LoginDto, application: Application) => {
+    const user = await this.applicationUserRepository.findOneBy(
+      { mail: params.mail },
+      ['password'],
+    );
+    if (
+      !user ||
+      !(await this.authenticationService.comparePassword({
+        password: params.password,
+        storedPassword: user.password,
+      }))
+    ) {
+      throw new UnauthorizedException();
+    }
+
+    return this.authenticationService.generateTokenPair(user, application);
+  };
 }
