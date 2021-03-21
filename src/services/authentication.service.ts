@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import config from '../config';
 import * as moment from 'moment';
 import * as bCrypt from 'bcrypt';
@@ -9,6 +9,7 @@ import { RefreshTokenRepository } from '../repositories/refreshToken.repository'
 import { User } from '../models/user.model';
 import { ApplicationUser } from '../models/applicationUser.model';
 import { Application } from '../models/application.model';
+import { UserRepository } from '../repositories/user.repository';
 
 type TokenPair = { token: string; refreshToken: string };
 
@@ -16,6 +17,7 @@ type TokenPair = { token: string; refreshToken: string };
 export class AuthenticationService {
   constructor(
     private readonly refreshTokenRepository: RefreshTokenRepository,
+    private readonly userRepository: UserRepository,
   ) {}
 
   encryptPassword = async (password: string): Promise<string> =>
@@ -74,4 +76,25 @@ export class AuthenticationService {
   };
 
   createActivationKey = () => Crypto.randomBytes(50).toString('hex');
+
+  verifyUserToken = (bearerToken: string): Promise<User> =>
+    new Promise((resolve, reject) => {
+      jwt.verify(bearerToken, config().jwt.secretKey, async (err, decoded) => {
+        if (err || !decoded) {
+          reject(new UnauthorizedException());
+
+          return;
+        }
+
+        const user = await this.userRepository.findOneById(decoded._id);
+
+        if (!user) {
+          reject(new UnauthorizedException());
+
+          return;
+        }
+
+        resolve(user);
+      });
+    });
 }

@@ -1,27 +1,27 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { UserRepository } from '../../repositories/user.repository';
-import { RegisterDto } from './dto/register.dto';
+import { UserRegisterDto } from './dto/user-register.dto';
 import { AuthenticationService } from '../../services/authentication.service';
 
 @Injectable()
 export class UserService {
   constructor(
     private readonly userRepository: UserRepository,
-    private readonly authenticationServices: AuthenticationService,
+    private readonly authenticationService: AuthenticationService,
   ) {}
 
-  registerUser = async (params: RegisterDto): Promise<void> => {
+  registerUser = async (params: UserRegisterDto): Promise<void> => {
     const existingUser = await this.userRepository.findOneBy({
       mail: params.mail,
     });
 
-    if (existingUser !== null && existingUser) {
+    if (existingUser !== null) {
       throw new BadRequestException();
     }
 
-    const activationKey = this.authenticationServices.createActivationKey();
+    const activationKey = this.authenticationService.createActivationKey();
 
-    const password = await this.authenticationServices.encryptPassword(
+    const password = await this.authenticationService.encryptPassword(
       params.password,
     );
 

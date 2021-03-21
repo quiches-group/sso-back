@@ -17,7 +17,7 @@ import {
   ApiSecurity,
 } from '@nestjs/swagger';
 import { UserIsAuthenticatedGuard } from '../../guards/user-is-authenticated.guard';
-import { RegisterDto } from './dto/register.dto';
+import { UserRegisterDto } from './dto/user-register.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -39,7 +39,7 @@ export class UserController {
   @HttpCode(201)
   @ApiCreatedResponse()
   @ApiBadRequestResponse()
-  async registerUser(@Body() body: RegisterDto) {
+  async registerUser(@Body() body: UserRegisterDto) {
     await this.userService.registerUser(body);
   }
 
