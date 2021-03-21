@@ -10,6 +10,7 @@ import { User } from '../models/user.model';
 import { ApplicationUser } from '../models/applicationUser.model';
 import { Application } from '../models/application.model';
 import { UserRepository } from '../repositories/user.repository';
+import { ApplicationUserRepository } from '../repositories/applicationUser.repository';
 
 type TokenPair = { token: string; refreshToken: string };
 
@@ -18,6 +19,7 @@ export class AuthenticationService {
   constructor(
     private readonly refreshTokenRepository: RefreshTokenRepository,
     private readonly userRepository: UserRepository,
+    private readonly applicationUserRepository: ApplicationUserRepository,
   ) {}
 
   encryptPassword = async (password: string): Promise<string> =>
@@ -87,6 +89,31 @@ export class AuthenticationService {
         }
 
         const user = await this.userRepository.findOneById(decoded._id);
+
+        if (!user) {
+          reject(new UnauthorizedException());
+
+          return;
+        }
+
+        resolve(user);
+      });
+    });
+
+  verifyApplicationUserToken = (
+    bearerToken: string,
+  ): Promise<ApplicationUser> =>
+    new Promise((resolve, reject) => {
+      jwt.verify(bearerToken, config().jwt.secretKey, async (err, decoded) => {
+        if (err || !decoded) {
+          reject(new UnauthorizedException());
+
+          return;
+        }
+
+        const user = await this.applicationUserRepository.findOneById(
+          decoded._id,
+        );
 
         if (!user) {
           reject(new UnauthorizedException());
