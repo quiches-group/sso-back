@@ -13,13 +13,13 @@ export class Application {
   @Prop({ unique: true, required: true })
   slug: string;
 
-  @Prop()
+  @Prop({ select: false })
   publicKey?: string;
 
-  @Prop()
+  @Prop({ select: false })
   privateKey?: string;
 
-  @Prop({ ref: 'User' })
+  @Prop({ ref: 'User', select: false })
   ownerRefs: Types.ObjectId[];
 }
 

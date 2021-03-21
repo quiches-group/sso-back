@@ -12,7 +12,6 @@ import {
   ApiCreatedResponse,
   ApiNoContentResponse,
   ApiOkResponse,
-  ApiQuery,
   ApiSecurity,
   ApiTags,
   ApiUnauthorizedResponse,

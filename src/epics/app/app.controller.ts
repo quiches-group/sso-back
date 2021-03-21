@@ -16,7 +16,7 @@ export class AppController {
   @ApiOkResponse()
   @ApiInternalServerErrorResponse()
   @ApiOperation({ summary: 'Get Application status. Used for monitoring' })
-  @Get('api/status')
+  @Get('status')
   getApplicationStatus() {
     const mongooseStatus = this.connection.readyState;
 
