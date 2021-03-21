@@ -16,10 +16,12 @@ import {
   ApiUnauthorizedResponse,
   ApiBadRequestResponse,
   ApiSecurity,
+  ApiNoContentResponse,
 } from '@nestjs/swagger';
 import { UserIsAuthenticatedGuard } from '../../guards/user-is-authenticated.guard';
 import { UserRegisterDto } from './dto/user-register.dto';
 import { LoginDto } from './dto/login.dto';
+import { TokenDto } from '../application-user/dto/token.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -35,6 +37,14 @@ export class UserController {
   getCurrentUser(@Request() req: Request) {
     // @ts-ignore
     return req.user;
+  }
+
+  @Post('verify-token')
+  @HttpCode(204)
+  @ApiNoContentResponse()
+  @ApiUnauthorizedResponse()
+  async verifyUserToken(@Body() body: TokenDto) {
+    await this.userService.verifyToken(body);
   }
 
   @Put()

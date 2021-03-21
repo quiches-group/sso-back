@@ -7,6 +7,8 @@ import { UserRepository } from '../../repositories/user.repository';
 import { UserRegisterDto } from './dto/user-register.dto';
 import { AuthenticationService } from '../../services/authentication.service';
 import { LoginDto } from './dto/login.dto';
+import { TokenDto } from '../application-user/dto/token.dto';
+import { User } from '../../models/user.model';
 
 @Injectable()
 export class UserService {
@@ -56,4 +58,7 @@ export class UserService {
 
     return this.authenticationService.generateTokenPair(user);
   };
+
+  verifyToken = (params: TokenDto): Promise<User> =>
+    this.authenticationService.verifyUserToken(params.token);
 }
