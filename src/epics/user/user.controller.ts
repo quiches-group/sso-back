@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   HttpCode,
+  Post,
   Put,
   Request,
   UseGuards,
@@ -18,13 +19,14 @@ import {
 } from '@nestjs/swagger';
 import { UserIsAuthenticatedGuard } from '../../guards/user-is-authenticated.guard';
 import { UserRegisterDto } from './dto/user-register.dto';
+import { LoginDto } from './dto/login.dto';
 
 @ApiTags('Users')
-@Controller('users')
+@Controller()
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Get('me')
+  @Get('users/me')
   @UseGuards(UserIsAuthenticatedGuard)
   // @ApiOperation({ summary: '' })
   @ApiSecurity('Bearer')
@@ -35,7 +37,7 @@ export class UserController {
     return req.user;
   }
 
-  @Put()
+  @Put('users')
   @HttpCode(201)
   @ApiCreatedResponse()
   @ApiBadRequestResponse()
@@ -48,4 +50,18 @@ export class UserController {
   // @ApiOkResponse()
   // @ApiBadRequestResponse()
   // async activeUser() {}
+
+  @Post('login')
+  @ApiOkResponse()
+  @ApiUnauthorizedResponse()
+  async loginUser(@Body() params: LoginDto) {
+    return await this.userService.loginUser(params);
+  }
+
+  // @ApiOkResponse()
+  // @ApiUnauthorizedResponse()
+  // @Post('refresh')
+  // async refreshToken() {
+  //   //  TODO: Implement Refresh token endpoint
+  // }
 }

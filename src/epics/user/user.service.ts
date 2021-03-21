@@ -1,7 +1,13 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { UserRepository } from '../../repositories/user.repository';
 import { UserRegisterDto } from './dto/user-register.dto';
 import { AuthenticationService } from '../../services/authentication.service';
+import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class UserService {
@@ -33,5 +39,25 @@ export class UserService {
 
     // TODO: Send Registration Mail
     // sendRegistrationMail(user);
+  };
+
+  loginUser = async (params: LoginDto) => {
+    const user = await this.userRepository.findOneBy({ mail: params.mail }, [
+      'password',
+    ]);
+    if (
+      !user ||
+      !(await this.authenticationService.comparePassword({
+        password: params.password,
+        storedPassword: user.password,
+      }))
+    ) {
+      throw new HttpException(
+        { statusCode: HttpStatus.UNAUTHORIZED, message: 'UNAUTHORIZED' },
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+
+    return this.authenticationService.generateTokenPair(user);
   };
 }
