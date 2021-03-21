@@ -20,4 +20,11 @@ export class UserAuthenticationController {
   async loginUser(@Body() params: LoginDTO) {
     return await this.userAuthenticationService.loginUser(params);
   }
+
+  // @ApiOkResponse()
+  // @ApiUnauthorizedResponse()
+  // @Post('refresh')
+  // async refreshToken() {
+  //   //  TODO: Implement
+  // }
 }
