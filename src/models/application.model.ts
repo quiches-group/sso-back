@@ -20,7 +20,7 @@ export class Application {
   privateKey?: string;
 
   @Prop({ ref: 'User', select: false })
-  ownerRefs: Types.ObjectId[];
+  ownerRefs: string[];
 }
 
 export const ApplicationSchema = SchemaFactory.createForClass(Application);
