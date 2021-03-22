@@ -6,9 +6,9 @@ import {
 import { CreateApplicationDto } from './dto/create-application.dto';
 import { Application } from '../../models/application.model';
 import { ApplicationRepository } from '../../repositories/application.repository';
-import slugify from 'slugify';
+import * as slugify from 'slugify';
 import { UserRepository } from '../../repositories/user.repository';
-import Crypto from 'crypto';
+import * as Crypto from 'crypto';
 import { User } from '../../models/user.model';
 
 @Injectable()
