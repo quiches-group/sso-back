@@ -14,10 +14,10 @@ export class RefreshToken {
   expirationDate: number;
 
   @Prop({ ref: 'User' })
-  userId: Types.ObjectId;
+  userId: string;
 
   @Prop({ ref: 'ApplicationUser' })
-  applicationUserId: Types.ObjectId;
+  applicationUserId: string;
 
   @Prop({ unique: true, required: true, default: false })
   active: boolean;

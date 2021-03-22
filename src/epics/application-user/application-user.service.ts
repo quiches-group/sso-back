@@ -40,7 +40,7 @@ export class ApplicationUserService {
       ...params,
       password,
       activationKey,
-      applicationId: application._id,
+      applicationId: String(application._id),
     });
 
     // TODO: Send Registration Mail

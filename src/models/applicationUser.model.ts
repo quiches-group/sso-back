@@ -11,7 +11,7 @@ export class ApplicationUser {
   mail: string;
 
   @Prop({ ref: 'Application', required: true })
-  applicationId: Types.ObjectId;
+  applicationId: string;
 
   @Prop({ select: false, required: true })
   password: string;

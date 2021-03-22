@@ -69,8 +69,8 @@ export class AuthenticationService {
       .toString();
 
     const data = !application
-      ? { token, expirationDate, userId: user._id }
-      : { token, expirationDate, applicationUserId: user._id };
+      ? { token, expirationDate, userId: String(user._id) }
+      : { token, expirationDate, applicationUserId: String(user._id) };
 
     const result = await this.refreshTokenRepository.insert(data);
 
