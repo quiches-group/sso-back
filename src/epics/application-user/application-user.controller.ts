@@ -65,7 +65,7 @@ export class ApplicationUserController {
   @UseGuards(IsAuthenticatedWithPublicKeyGuard)
   @ApiOkResponse()
   @ApiUnauthorizedResponse()
-  @ApiSecurity('PublicKey')
+  @ApiSecurity('Public Key')
   async loginApplicationUser(
     @Request() request: Request,
     @Body() params: LoginDto,
