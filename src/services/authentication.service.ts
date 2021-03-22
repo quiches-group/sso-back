@@ -12,7 +12,7 @@ import { Application } from '../models/application.model';
 import { UserRepository } from '../repositories/user.repository';
 import { ApplicationUserRepository } from '../repositories/applicationUser.repository';
 
-type TokenPair = { token: string; refreshToken: string };
+export type TokenPair = { token: string; refreshToken: string };
 
 @Injectable()
 export class AuthenticationService {

@@ -22,6 +22,7 @@ import { UserIsAuthenticatedGuard } from '../../guards/user-is-authenticated.gua
 import { UserRegisterDto } from './dto/user-register.dto';
 import { LoginDto } from './dto/login.dto';
 import { TokenDto } from '../application-user/dto/token.dto';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -68,10 +69,10 @@ export class UserController {
     return await this.userService.loginUser(params);
   }
 
-  // @ApiOkResponse()
-  // @ApiUnauthorizedResponse()
-  // @Post('refresh')
-  // async refreshToken() {
-  //   //  TODO: Implement Refresh token endpoint
-  // }
+  @Post('refresh-token')
+  @ApiOkResponse()
+  @ApiUnauthorizedResponse()
+  async refreshToken(@Body() body: RefreshTokenDto) {
+    return this.userService.refreshToken(body);
+  }
 }
