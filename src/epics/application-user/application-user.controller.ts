@@ -25,6 +25,7 @@ import { IsAuthenticatedWithPublicKeyGuard } from '../../guards/is-authenticated
 import { ApplicationUserRegisterDto } from './dto/application-user-register.dto';
 import { TokenDto } from './dto/token.dto';
 import { LoginDto } from '../user/dto/login.dto';
+import { UserIsAuthenticatedGuard } from '../../guards/user-is-authenticated.guard';
 
 @Controller('application-users')
 @ApiTags('Application Users')
@@ -82,6 +83,8 @@ export class ApplicationUserController {
 
   @Get('application/:applicationId')
   @HttpCode(200)
+  @UseGuards(UserIsAuthenticatedGuard)
+  @ApiSecurity('Bearer')
   @ApiOkResponse()
   @ApiUnauthorizedResponse()
   @ApiQuery({ name: 'search', required: false })
