@@ -80,5 +80,8 @@ export class ApplicationService {
   };
 
   getApplicationsOwnedByUser = (user: User): Promise<Application[]> =>
-    this.applicationRepository.findManyBy({ ownerRefs: String(user._id) });
+    this.applicationRepository.findManyBy({ ownerRefs: String(user._id) }, [
+      'privateKey',
+      'publicKey',
+    ]);
 }

@@ -101,7 +101,7 @@ class BaseRepository<T extends Document> {
     try {
       // @ts-ignore
       return this.Model.find(condition).select(
-        hiddenPropertiesToSelect.join('+'),
+        hiddenPropertiesToSelect.map((property) => `+${property}`).join(' '),
       );
     } catch {
       return [];
