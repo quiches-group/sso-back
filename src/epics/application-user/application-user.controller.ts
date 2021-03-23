@@ -6,6 +6,8 @@ import {
   UseGuards,
   Request,
   Post,
+  Get,
+  Param,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -66,16 +68,25 @@ export class ApplicationUserController {
   @ApiOkResponse()
   @ApiUnauthorizedResponse()
   @ApiSecurity('Public Key')
-  async loginApplicationUser(
-    @Request() request: Request,
-    @Body() params: LoginDto,
-  ) {
+  loginApplicationUser(@Request() request: Request, @Body() params: LoginDto) {
     // @ts-ignore
     const application = request.application;
 
-    return await this.applicationUserService.loginApplicationUser(
+    return this.applicationUserService.loginApplicationUser(
       params,
       application,
+    );
+  }
+
+  @Get('application/:applicationId')
+  @HttpCode(200)
+  @ApiOkResponse()
+  @ApiUnauthorizedResponse()
+  getApplicationUsersByApplicationId(
+    @Param('applicationId') applicationId: string,
+  ) {
+    return this.applicationUserService.getApplicationUsersByApplicationId(
+      applicationId,
     );
   }
 

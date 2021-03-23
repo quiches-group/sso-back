@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  Param,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ApplicationUserRegisterDto } from './dto/application-user-register.dto';
@@ -67,4 +68,9 @@ export class ApplicationUserService {
 
     return this.authenticationService.generateTokenPair(user, application);
   };
+
+  getApplicationUsersByApplicationId = (
+    applicationId: string,
+  ): Promise<ApplicationUser[]> =>
+    this.applicationUserRepository.findManyBy({ applicationId });
 }
