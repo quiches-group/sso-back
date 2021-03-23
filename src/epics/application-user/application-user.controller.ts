@@ -8,12 +8,14 @@ import {
   Post,
   Get,
   Param,
+  Query,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
   ApiNoContentResponse,
   ApiOkResponse,
+  ApiQuery,
   ApiSecurity,
   ApiTags,
   ApiUnauthorizedResponse,
@@ -82,11 +84,14 @@ export class ApplicationUserController {
   @HttpCode(200)
   @ApiOkResponse()
   @ApiUnauthorizedResponse()
+  @ApiQuery({ name: 'search', required: false })
   getApplicationUsersByApplicationId(
     @Param('applicationId') applicationId: string,
+    @Query('search') search?: string,
   ) {
     return this.applicationUserService.getApplicationUsersByApplicationId(
       applicationId,
+      search,
     );
   }
 

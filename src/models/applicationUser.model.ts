@@ -7,7 +7,7 @@ export type ApplicationUserDocument = ApplicationUser & Document;
 export class ApplicationUser {
   _id: Types.ObjectId;
 
-  @Prop({ unique: true, required: true })
+  @Prop({ required: true })
   mail: string;
 
   @Prop({ ref: 'Application', required: true })

@@ -71,6 +71,19 @@ export class ApplicationUserService {
 
   getApplicationUsersByApplicationId = (
     applicationId: string,
-  ): Promise<ApplicationUser[]> =>
-    this.applicationUserRepository.findManyBy({ applicationId });
+    search?: string,
+  ): Promise<ApplicationUser[]> => {
+    const query = !search
+      ? { applicationId }
+      : {
+          applicationId,
+          $or: [
+            { firstname: new RegExp(search, 'i') },
+            { lastname: new RegExp(search, 'i') },
+            { mail: new RegExp(search, 'i') },
+          ],
+        };
+
+    return this.applicationUserRepository.findManyBy(query);
+  };
 }
