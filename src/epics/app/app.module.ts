@@ -5,6 +5,9 @@ import { AppController } from './app.controller';
 import { UserModule } from '../user/user.module';
 import { ApplicationUserModule } from '../application-user/application-user.module';
 import { ApplicationModule } from '../application/application.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { RefreshTokenDeletionCron } from '../../crons/refresh-token-deletion.cron';
+import { MongoModule } from './mongo.module';
 
 @Module({
   imports: [
@@ -12,8 +15,10 @@ import { ApplicationModule } from '../application/application.module';
     UserModule,
     ApplicationUserModule,
     ApplicationModule,
+    ScheduleModule.forRoot(),
+    MongoModule,
   ],
   controllers: [AppController],
-  providers: [],
+  providers: [RefreshTokenDeletionCron],
 })
 export class AppModule {}
