@@ -26,6 +26,7 @@ import { ApplicationUserRegisterDto } from './dto/application-user-register.dto'
 import { TokenDto } from './dto/token.dto';
 import { LoginDto } from '../user/dto/login.dto';
 import { UserIsAuthenticatedGuard } from '../../guards/user-is-authenticated.guard';
+import { ApplicationUsersIsAuthenticatedGuard } from '../../guards/application-users-is-authenticated.guard';
 
 @Controller('application-users')
 @ApiTags('Application Users')
@@ -96,6 +97,17 @@ export class ApplicationUserController {
       applicationId,
       search,
     );
+  }
+
+  @Get('current')
+  @UseGuards(ApplicationUsersIsAuthenticatedGuard)
+  // @ApiOperation({ summary: '' })
+  @ApiSecurity('Bearer')
+  @ApiOkResponse()
+  @ApiUnauthorizedResponse()
+  getCurrentUser(@Request() req: Request) {
+    // @ts-ignore
+    return req.user;
   }
 
   // @ApiOkResponse()
