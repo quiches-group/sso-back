@@ -27,6 +27,7 @@ import { TokenDto } from './dto/token.dto';
 import { LoginDto } from '../user/dto/login.dto';
 import { UserIsAuthenticatedGuard } from '../../guards/user-is-authenticated.guard';
 import { ApplicationUsersIsAuthenticatedGuard } from '../../guards/application-users-is-authenticated.guard';
+import { IsAuthenticatedWithPrivateKeyGuard } from '../../guards/is-authenticated-with-private-key.guard';
 
 @Controller('application-users')
 @ApiTags('Application Users')
@@ -93,6 +94,25 @@ export class ApplicationUserController {
     @Param('applicationId') applicationId: string,
     @Query('search') search?: string,
   ) {
+    return this.applicationUserService.getApplicationUsersByApplicationId(
+      applicationId,
+      search,
+    );
+  }
+
+  @Get('private-key')
+  @HttpCode(200)
+  @UseGuards(IsAuthenticatedWithPrivateKeyGuard)
+  @ApiSecurity('Private Key')
+  @ApiOkResponse()
+  @ApiUnauthorizedResponse()
+  @ApiQuery({ name: 'search', required: false })
+  getApplicationUsers(
+    @Request() req: Request,
+    @Query('search') search?: string,
+  ) {
+    // @ts-ignore
+    const applicationId = req.application._id;
     return this.applicationUserService.getApplicationUsersByApplicationId(
       applicationId,
       search,

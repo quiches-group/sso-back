@@ -19,6 +19,11 @@ const useSwagger = (app: INestApplication) => {
       type: 'apiKey',
       name: 'publicKey',
     })
+    .addSecurity('Private Key', {
+      in: 'query',
+      type: 'apiKey',
+      name: 'privateKey',
+    })
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);
