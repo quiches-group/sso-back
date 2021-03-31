@@ -81,6 +81,18 @@ export class ApplicationUserController {
     );
   }
 
+  @Post('sign-in-with-apple')
+  @UseGuards(IsAuthenticatedWithPublicKeyGuard)
+  @ApiOkResponse()
+  @ApiUnauthorizedResponse()
+  @ApiSecurity('Public Key')
+  signInWithApple(@Request() request: Request, @Body() params: LoginDto) {
+    // @ts-ignore
+    const application = request.application;
+
+    console.log(application, params);
+  }
+
   @Get('application/:applicationId')
   @HttpCode(200)
   @UseGuards(UserIsAuthenticatedGuard)

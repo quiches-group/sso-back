@@ -11,6 +11,7 @@ import { ApplicationUser } from '../models/applicationUser.model';
 import { Application } from '../models/application.model';
 import { UserRepository } from '../repositories/user.repository';
 import { ApplicationUserRepository } from '../repositories/applicationUser.repository';
+import * as AppleAuth from 'apple-auth';
 
 export type TokenPair = { token: string; refreshToken: string };
 
