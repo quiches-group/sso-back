@@ -84,4 +84,7 @@ export class ApplicationService {
       'privateKey',
       'publicKey',
     ]);
+
+  removeApplicationById = (applicationId: string): Promise<boolean> =>
+    this.applicationRepository.deleteOnyBy({ _id: applicationId });
 }

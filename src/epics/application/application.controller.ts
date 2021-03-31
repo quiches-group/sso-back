@@ -8,11 +8,13 @@ import {
   Delete,
   Param,
   Get,
+  BadRequestException,
 } from '@nestjs/common';
 import { ApplicationService } from './application.service';
 import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
+  ApiNoContentResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiSecurity,
@@ -46,6 +48,24 @@ export class ApplicationController {
   @ApiNotFoundResponse()
   getApplicationByPublicKey(@Param('privateKey') privateKey: string) {
     return this.applicationService.getApplicationByPrivateKey(privateKey);
+  }
+
+  @Delete('single/:applicationId')
+  @HttpCode(204)
+  @UseGuards(UserIsAuthenticatedGuard)
+  @ApiNoContentResponse()
+  @ApiBadRequestResponse()
+  @ApiSecurity('Bearer')
+  async removeApplicationByApplicationId(
+    @Param('applicationId') applicationId: string,
+  ) {
+    const applicationDeletion = await this.applicationService.removeApplicationById(
+      applicationId,
+    );
+
+    if (!applicationDeletion) {
+      throw new BadRequestException();
+    }
   }
 
   @Get('/owned')
