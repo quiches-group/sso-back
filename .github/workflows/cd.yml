@@ -56,6 +56,7 @@ jobs:
               --network reverse-proxy \
               --env-file .env.sso \
               --restart always \
+              -v ./sso.key.jwt:/home/node/key.JWT
               -l traefik.enable=true \
               -l traefik.http.routers.API_QUICHE_SSO.rule=Host\(\`sso.quiches.ovh\`\) \
               -l traefik.http.routers.API_QUICHE_SSO.entrypoints=http \
