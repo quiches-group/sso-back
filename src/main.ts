@@ -27,7 +27,6 @@ const useSwagger = (app: INestApplication) => {
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);
-
   SwaggerModule.setup('docs', app, document);
 };
 
