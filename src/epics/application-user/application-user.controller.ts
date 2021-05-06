@@ -28,6 +28,7 @@ import { LoginDto } from '../user/dto/login.dto';
 import { UserIsAuthenticatedGuard } from '../../guards/user-is-authenticated.guard';
 import { ApplicationUsersIsAuthenticatedGuard } from '../../guards/application-users-is-authenticated.guard';
 import { IsAuthenticatedWithPrivateKeyGuard } from '../../guards/is-authenticated-with-private-key.guard';
+import { RefreshTokenDto } from '../user/dto/refresh-token.dto';
 
 @Controller('application-users')
 @ApiTags('Application Users')
@@ -79,6 +80,24 @@ export class ApplicationUserController {
 
     return this.applicationUserService.loginApplicationUser(
       params,
+      application,
+    );
+  }
+
+  @Post('refresh-token')
+  @UseGuards(IsAuthenticatedWithPublicKeyGuard)
+  @ApiOkResponse()
+  @ApiUnauthorizedResponse()
+  @ApiSecurity('Public Key')
+  async refreshToken(
+    @Request() request: Request,
+    @Body() body: RefreshTokenDto,
+  ) {
+    // @ts-ignore
+    const application = request.application;
+
+    return this.applicationUserService.refreshTokenApplicationUser(
+      body,
       application,
     );
   }

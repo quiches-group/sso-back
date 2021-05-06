@@ -6,17 +6,24 @@ import {
 } from '@nestjs/common';
 import { ApplicationUserRegisterDto } from './dto/application-user-register.dto';
 import { ApplicationUserRepository } from '../../repositories/applicationUser.repository';
-import { AuthenticationService } from '../../services/authentication.service';
+import {
+  AuthenticationService,
+  TokenPair,
+} from '../../services/authentication.service';
 import { Application } from '../../models/application.model';
 import { TokenDto } from './dto/token.dto';
 import { ApplicationUser } from '../../models/applicationUser.model';
 import { LoginDto } from '../user/dto/login.dto';
+import { RefreshTokenDto } from '../user/dto/refresh-token.dto';
+import * as moment from 'moment';
+import { RefreshTokenRepository } from '../../repositories/refreshToken.repository';
 
 @Injectable()
 export class ApplicationUserService {
   constructor(
     private readonly applicationUserRepository: ApplicationUserRepository,
     private readonly authenticationService: AuthenticationService,
+    private readonly refreshTokenRepository: RefreshTokenRepository,
   ) {}
 
   registerApplicationUser = async (
@@ -65,6 +72,27 @@ export class ApplicationUserService {
     ) {
       throw new UnauthorizedException();
     }
+
+    return this.authenticationService.generateTokenPair(user, application);
+  };
+
+  refreshTokenApplicationUser = async (
+    params: RefreshTokenDto,
+    application: Application,
+  ): Promise<TokenPair> => {
+    const token = await this.refreshTokenRepository.findOneBy({
+      token: params.refreshToken,
+    });
+
+    if (!token || !token.active || token.expirationDate < moment().unix()) {
+      throw new UnauthorizedException();
+    }
+
+    const user = await this.applicationUserRepository.findOneById(token.userId);
+    this.refreshTokenRepository.updateOneBy(
+      { _id: token._id },
+      { active: false },
+    );
 
     return this.authenticationService.generateTokenPair(user, application);
   };
