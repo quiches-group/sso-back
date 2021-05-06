@@ -21,19 +21,19 @@ class BaseRepository<T extends Document> {
 
       return await newObject.save();
     } catch (e) {
-      const requiredErrorKeys = Object.keys(e.errors).filter(
-        (key) => e.errors[key].kind === 'required',
-      );
-
-      if (requiredErrorKeys.length) {
-        throw new HttpException(
-          {
-            statusCode: HttpStatus.BAD_REQUEST,
-            message: 'MISSING_REQUIRED_FIELDS',
-          },
-          HttpStatus.BAD_REQUEST,
-        );
-      }
+      // const requiredErrorKeys = Object.keys(e.errors).filter(
+      //   (key) => e.errors[key].kind === 'required',
+      // );
+      //
+      // if (requiredErrorKeys.length) {
+      //   throw new HttpException(
+      //     {
+      //       statusCode: HttpStatus.BAD_REQUEST,
+      //       message: 'MISSING_REQUIRED_FIELDS',
+      //     },
+      //     HttpStatus.BAD_REQUEST,
+      //   );
+      // }
 
       throw new HttpException(
         {
