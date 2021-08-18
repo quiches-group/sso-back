@@ -30,7 +30,17 @@ export class AppController {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+  }
 
-    return data;
+  @ApiOkResponse()
+  @ApiInternalServerErrorResponse()
+  @ApiOperation({ summary: 'Get Apple App Site Association' })
+  @Get('apple-app-site-association')
+  getAppleAppSiteAssociation() {
+    return {
+      webcredentials: {
+        apps: ['S4J5D3N22R.com.worldline.dam.payfoot.mm'],
+      },
+    };
   }
 }
