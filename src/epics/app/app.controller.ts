@@ -7,6 +7,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import * as AppleAppSiteAssociation from '../../apple-app-site-association.json';
 
 @ApiTags('Application')
 @Controller()
@@ -37,10 +38,7 @@ export class AppController {
   @ApiOperation({ summary: 'Get Apple App Site Association' })
   @Get('apple-app-site-association')
   getAppleAppSiteAssociation() {
-    return {
-      webcredentials: {
-        apps: ['S4J5D3N22R.com.worldline.dam.payfoot.mm'],
-      },
-    };
+    console.log(AppleAppSiteAssociation);
+    return AppleAppSiteAssociation;
   }
 }
